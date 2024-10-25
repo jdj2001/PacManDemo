@@ -23,9 +23,9 @@ void initGame() {
 
     initPacman(centroX, centroY, escalaMapa); 
 }
-
-
 //
+
+
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT);
     drawMapa();  
