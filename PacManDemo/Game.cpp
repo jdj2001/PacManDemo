@@ -23,13 +23,9 @@ void initGame() {
 
     initPacman(centroX, centroY, escalaMapa); 
 }
-//
-
 
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT);
-    drawMapa();  
-    drawPacman(pacmanTexture);  
     glutSwapBuffers();
 }
 
@@ -39,7 +35,6 @@ void updateGame() {
 }
 
 void handleInput(unsigned char key) {
-    processPacmanInput(key);  
     switch (key) {
     case 'w':
         break;
