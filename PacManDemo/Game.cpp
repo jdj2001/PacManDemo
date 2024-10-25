@@ -25,7 +25,7 @@ void initGame() {
 }
 
 
-
+//
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT);
     drawMapa();  
