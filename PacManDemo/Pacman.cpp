@@ -1,52 +1,155 @@
 #include "Pacman.h"
 #include "Game.h"
+#include "Mapa.h"
 
-float pacmanX = 0.0f;  
-float pacmanY = 0.0f;  
-float pacmanSpeed = 10.0f;  
+float pacmanX = 0.0f;
+float pacmanY = 0.0f;
+float pacmanSpeed = 4.0f;  // Velocidad de Pacman
+float pacmanAncho = 46.2f;
+float pacmanAlto = 46.2f;
+
+enum Direccion { DERECHA, IZQUIERDA, ARRIBA, ABAJO };
+Direccion direccionActual = DERECHA;
+bool enMovimiento = false;  // Si Pacman está en movimiento
+
+// Índice para la animación del ciclo
+int animacionIndex = 0;
+int animacionDelay = 40;  // Tiempo en milisegundos entre animaciones
+float lastAnimacionTime = 0;  // Último tiempo en el que se cambió la animación
+
+// Posiciones de las animaciones dentro del sprite
+struct Animacion {
+    float texCoordLeft;
+    float texCoordRight;
+    float texCoordBottom;
+    float texCoordTop;
+};
+
+Animacion pacmanAnimaciones[3][4];  // 3 animaciones, 4 direcciones
+
+void initAnimaciones() {
+    // Configuración para la animación de cada dirección:
+    // Boca cerrada (primera animación)
+    pacmanAnimaciones[0][DERECHA] = { 35.0f / 226.0f, (35.0f + 13.0f) / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };
+    pacmanAnimaciones[0][IZQUIERDA] = pacmanAnimaciones[0][DERECHA];  // Mirror para izquierda
+    pacmanAnimaciones[0][ARRIBA] = pacmanAnimaciones[0][DERECHA];     // También reutilizamos boca cerrada para arriba
+    pacmanAnimaciones[0][ABAJO] = pacmanAnimaciones[0][DERECHA];      // Y para abajo
+
+    // Boca abierta normal (segunda animación)
+    pacmanAnimaciones[1][DERECHA] = { 19.0f / 226.0f, (19.0f + 12.0f) / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };
+    pacmanAnimaciones[1][IZQUIERDA] = { (19.0f + 12.0f) / 226.0f, 19.0f / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };  // Mirror
+    pacmanAnimaciones[1][ARRIBA] = { 19.0f / 226.0f, (19.0f + 13.0f) / 226.0f, (34.0f + 12.0f) / 248.0f, 34.0f / 248.0f };
+    pacmanAnimaciones[1][ABAJO] = { 19.0f / 226.0f, (19.0f + 13.0f) / 226.0f, 34.0f / 248.0f, (34.0f + 12.0f) / 248.0f };   // Mirror
+
+    // Boca muy abierta (tercera animación)
+    pacmanAnimaciones[2][DERECHA] = { 3.0f / 226.0f, (3.0f + 9.0f) / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };
+    pacmanAnimaciones[2][IZQUIERDA] = { (3.0f + 9.0f) / 226.0f, 3.0f / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };  // Mirror
+    pacmanAnimaciones[2][ARRIBA] = { 3.0f / 226.0f, (3.0f + 13.0f) / 226.0f, (37.0f + 9.0f) / 248.0f, 37.0f / 248.0f };
+    pacmanAnimaciones[2][ABAJO] = { 3.0f / 226.0f, (3.0f + 13.0f) / 226.0f, 37.0f / 248.0f, (37.0f + 9.0f) / 248.0f };     // Mirror
+}
 
 void initPacman(float centroX, float centroY, float escalaMapa) {
-    pacmanX = centroX + 111.0f * escalaMapa;
-    pacmanY = centroY + 133.0f * escalaMapa;
+    pacmanX = centroX + 106.0f * escalaMapa;
+    pacmanY = centroY + 101.5f * escalaMapa;
+
+    // Inicializar animaciones
+    initAnimaciones();
 }
 
 void drawPacman(GLuint textureID) {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    float texCoordLeft = 19.0f / 226.0f;
-    float texCoordRight = (30.0f + 1.0f) / 226.0f;
-    float texCoordBottom = (13.0f + 1.0f) / 248.0f;
-    float texCoordTop = 1.0f / 248.0f;
-
-    float pacmanAncho = 42.0f;
-    float pacmanAlto = 42.0f;
+    // Obtener la animación actual según la dirección y el índice de animación
+    Animacion currentAnim = pacmanAnimaciones[animacionIndex][direccionActual];
 
     glBegin(GL_QUADS);
-    glTexCoord2f(texCoordLeft, texCoordBottom); glVertex2f(pacmanX, pacmanY);
-    glTexCoord2f(texCoordRight, texCoordBottom); glVertex2f(pacmanX + pacmanAncho, pacmanY);
-    glTexCoord2f(texCoordRight, texCoordTop); glVertex2f(pacmanX + pacmanAncho, pacmanY + pacmanAlto);
-    glTexCoord2f(texCoordLeft, texCoordTop); glVertex2f(pacmanX, pacmanY + pacmanAlto);
+    glTexCoord2f(currentAnim.texCoordLeft, currentAnim.texCoordBottom); glVertex2f(pacmanX, pacmanY);
+    glTexCoord2f(currentAnim.texCoordRight, currentAnim.texCoordBottom); glVertex2f(pacmanX + pacmanAncho, pacmanY);
+    glTexCoord2f(currentAnim.texCoordRight, currentAnim.texCoordTop); glVertex2f(pacmanX + pacmanAncho, pacmanY + pacmanAlto);
+    glTexCoord2f(currentAnim.texCoordLeft, currentAnim.texCoordTop); glVertex2f(pacmanX, pacmanY + pacmanAlto);
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
 }
 
+// Actualizar la animación del Pacman
+void updatePacmanAnimacion() {
+    float currentTime = glutGet(GLUT_ELAPSED_TIME);
+    if (currentTime - lastAnimacionTime > animacionDelay) {
+        // Cambiar el estado de la animación cíclicamente
+        animacionIndex = (animacionIndex + 1) % 3;  // 0 = cerrado, 1 = abierto normal, 2 = muy abierto
+        lastAnimacionTime = currentTime;
+    }
+}
+
+// Actualizar la posición de Pacman y la animación
 void updatePacman() {
-    
+    if (enMovimiento) {
+        updatePacmanAnimacion();
+        float nextX = pacmanX;
+        float nextY = pacmanY;
+
+        // Movimiento según la dirección
+        switch (direccionActual) {
+        case DERECHA:
+            nextX += pacmanSpeed;
+            break;
+        case IZQUIERDA:
+            nextX -= pacmanSpeed;
+            break;
+        case ARRIBA:
+            nextY += pacmanSpeed;
+            break;
+        case ABAJO:
+            nextY -= pacmanSpeed;
+            break;
+        }
+
+        // Verificar colisiones antes de actualizar la posición
+        if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
+            pacmanX = nextX;
+            pacmanY = nextY;
+        }
+        else {
+            enMovimiento = false;  // Si colisiona, detener el movimiento
+        }
+    }
 }
 
 void processPacmanInput(unsigned char key) {
+    // Antes de cambiar la dirección, verificamos si hay colisiones en esa dirección
     float nextX = pacmanX;
     float nextY = pacmanY;
 
-    if (key == 'w') nextY += pacmanSpeed;
-    if (key == 's') nextY -= pacmanSpeed;
-    if (key == 'a') nextX -= pacmanSpeed;
-    if (key == 'd') nextX += pacmanSpeed;
-
-    pacmanX = nextX;
-    pacmanY = nextY;
+    switch (key) {
+    case 'd':  // Derecha
+        nextX += pacmanSpeed;
+        if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
+            direccionActual = DERECHA;
+            enMovimiento = true;
+        }
+        break;
+    case 'a':  // Izquierda
+        nextX -= pacmanSpeed;
+        if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
+            direccionActual = IZQUIERDA;
+            enMovimiento = true;
+        }
+        break;
+    case 'w':  // Arriba
+        nextY += pacmanSpeed;
+        if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
+            direccionActual = ARRIBA;
+            enMovimiento = true;
+        }
+        break;
+    case 's':  // Abajo
+        nextY -= pacmanSpeed;
+        if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
+            direccionActual = ABAJO;
+            enMovimiento = true;
+        }
+        break;
+    }
 }
-
-

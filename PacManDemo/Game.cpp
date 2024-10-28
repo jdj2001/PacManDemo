@@ -9,23 +9,33 @@
 unsigned int pacmanTexture;  
 unsigned int mapaTexture;
 
+
+float escalaMapa;  // Factor de escala global
+float centroX;     // Desplazamiento en X para centrar el mapa
+float centroY;     // Desplazamiento en Y para centrar el mapa
+
 void initGame() {
     pacmanTexture = loadTexture("C:/sprite_personajes.png");
     mapaTexture = loadTexture("C:/mapa1.png");
 
-    initMapa(); 
+    initMapa();  // Inicializar el mapa y sus objetos
 
     float ventanaAncho = 1720.0f;
     float ventanaAlto = 880.0f;
-    float escalaMapa = std::min(ventanaAncho / 227.0f, ventanaAlto / 248.0f);
-    float centroX = (ventanaAncho - 227.0f * escalaMapa) / 2.0f;
-    float centroY = (ventanaAlto - 248.0f * escalaMapa) / 2.0f;
+    float escalaX = ventanaAncho / 227.0f;
+    float escalaY = ventanaAlto / 248.0f;
+    escalaMapa = std::min(escalaX, escalaY);
 
-    initPacman(centroX, centroY, escalaMapa); 
+    centroX = (ventanaAncho - 227.0f * escalaMapa) / 2.0f;
+    centroY = (ventanaAlto - 248.0f * escalaMapa) / 2.0f;
+
+    initPacman(centroX, centroY, escalaMapa);  // Inicializar la posición de Pacman
 }
 
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT);
+    drawMapa();  // Dibujar el mapa
+    drawPacman(pacmanTexture);  // Dibujar a Pacman
     glutSwapBuffers();
 }
 
@@ -35,14 +45,5 @@ void updateGame() {
 }
 
 void handleInput(unsigned char key) {
-    switch (key) {
-    case 'w':
-        break;
-    case 's':
-        break;
-    case 'a':
-        break;
-    case 'd':
-        break;
-    }
+    processPacmanInput(key);
 }
