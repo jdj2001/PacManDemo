@@ -8,7 +8,7 @@
 void initMapa();   
 void drawMapa();   
 bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);  // Función para detectar colisiones
-void calcularPasillos();
+//void calcularPasillos();
 
 extern float escalaMapa;  // Factor de escala global
 extern float centroX;     // Desplazamiento del mapa en X

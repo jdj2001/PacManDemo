@@ -11,88 +11,83 @@ float mapaX = 0.0f;
 float mapaY = 0.0f;
 
 struct Objeto {
-    float x, y, ancho, alto;  // Estructura para representar las paredes y obstáculos
+    float x, y, ancho, alto;  
 };
 
-std::vector<Objeto> objetos;  // Vector que contendrá los objetos (paredes y obstáculos)
+std::vector<Objeto> objetos; 
 
-extern float escalaMapa;  // Usamos el factor de escala calculado
-extern float centroX;     // El desplazamiento del centro en X
-extern float centroY;     // El desplazamiento del centro en Y
+extern float escalaMapa;  
+extern float centroX;     
+extern float centroY;     
 
-float mapaOriginalAlto = 248.0f;  // Altura original del mapa
-
-/*void initMapa() {
-    mapaX = 0.0f;
-    mapaY = 0.0f;
-}*/
+float mapaOriginalAlto = 248.0f;  
 
 void initMapa() {
     // Segmento superior
-    objetos.push_back({ 0, mapaOriginalAlto - (0 + 5), 224, 5 });  // Pared superior
-    objetos.push_back({ 107, mapaOriginalAlto - (3 + 34), 10, 34 });  // Obstáculo superior 1
-    objetos.push_back({ 19, mapaOriginalAlto - (19 + 18), 26, 18 });  // Obstáculo superior 2
-    objetos.push_back({ 19, mapaOriginalAlto - (51 + 10), 26, 10 });  // Obstáculo superior 3
-    objetos.push_back({ 59, mapaOriginalAlto - (19 + 18), 34, 18 });  // Obstáculo superior 4
-    objetos.push_back({ 59, mapaOriginalAlto - (51 + 58), 10, 58 });  // Obstáculo superior 5
-    objetos.push_back({ 68, mapaOriginalAlto - (75 + 10), 24, 10 });  // Obstáculo superior 6
-    objetos.push_back({ 83, mapaOriginalAlto - (51 + 10), 58, 10 });  // Obstáculo superior 7
-    objetos.push_back({ 107, mapaOriginalAlto - (60 + 25), 10, 25 }); // Obstáculo superior 8
-    objetos.push_back({ 131, mapaOriginalAlto - (19 + 18), 34, 18 }); // Obstáculo superior 9
-    objetos.push_back({ 179, mapaOriginalAlto - (19 + 18), 26, 18 }); // Obstáculo superior 10
-    objetos.push_back({ 179, mapaOriginalAlto - (51 + 10), 26, 10 });  // Obstáculo superior 11
-    objetos.push_back({ 155, mapaOriginalAlto - (51 + 58), 10, 58 });  // Obstáculo superior 12
-    objetos.push_back({ 131, mapaOriginalAlto - (75 + 10), 25, 10 });  // Obstáculo superior 13
+    objetos.push_back({ 0, mapaOriginalAlto - (0 + 5), 224, 5 }); 
+    objetos.push_back({ 107, mapaOriginalAlto - (3 + 34), 10, 34 });  
+    objetos.push_back({ 19, mapaOriginalAlto - (19 + 18), 26, 18 });  
+    objetos.push_back({ 19, mapaOriginalAlto - (51 + 10), 26, 10 });  
+    objetos.push_back({ 59, mapaOriginalAlto - (19 + 18), 34, 18 });  
+    objetos.push_back({ 59, mapaOriginalAlto - (51 + 58), 10, 58 });  
+    objetos.push_back({ 68, mapaOriginalAlto - (75 + 10), 24, 10 });  
+    objetos.push_back({ 83, mapaOriginalAlto - (51 + 10), 58, 10 });  
+    objetos.push_back({ 107, mapaOriginalAlto - (60 + 25), 10, 25 }); 
+    objetos.push_back({ 131, mapaOriginalAlto - (19 + 18), 34, 18 }); 
+    objetos.push_back({ 179, mapaOriginalAlto - (19 + 18), 26, 18 }); 
+    objetos.push_back({ 179, mapaOriginalAlto - (51 + 10), 26, 10 }); 
+    objetos.push_back({ 155, mapaOriginalAlto - (51 + 58), 10, 58 });  
+    objetos.push_back({ 131, mapaOriginalAlto - (75 + 10), 25, 10 });  
 
     // Paredes laterales
-    objetos.push_back({ 0, mapaOriginalAlto - (0 + 76), 5, 76 });     // Pared izquierda
-    objetos.push_back({ 219, mapaOriginalAlto - (0 + 80), 5, 80 });   // Pared derecha
+    objetos.push_back({ 0, mapaOriginalAlto - (0 + 76), 5, 76 });     
+    objetos.push_back({ 219, mapaOriginalAlto - (0 + 80), 5, 80 });   
 
     // Obstáculos inferiores (izquierda y derecha)
-    objetos.push_back({ 0, mapaOriginalAlto - (75 + 34), 45, 34 });   // Obstáculo izquierdo inferior
-    objetos.push_back({ 179, mapaOriginalAlto - (75 + 34), 45, 34 }); // Obstáculo derecho inferior
+    objetos.push_back({ 0, mapaOriginalAlto - (75 + 34), 45, 34 });   
+    objetos.push_back({ 179, mapaOriginalAlto - (75 + 34), 45, 34 });
 
     // Segmento medio (jaula de los fantasmas)
-    objetos.push_back({ 83, mapaOriginalAlto - (99 + 1), 58, 1 });    // Pared superior exterior
-    objetos.push_back({ 83, mapaOriginalAlto - (99 + 34), 1, 34 });   // Pared izquierda exterior
-    objetos.push_back({ 83, mapaOriginalAlto - (132 + 1), 58, 1 });   // Pared inferior exterior
-    objetos.push_back({ 140, mapaOriginalAlto - (99 + 34), 1, 34 });  // Pared derecha exterior
-    objetos.push_back({ 88, mapaOriginalAlto - (104 + 24), 1, 24 });  // Pared izquierda interior
-    objetos.push_back({ 88, mapaOriginalAlto - (104 + 1), 48, 1 });   // Pared superior interior
-    objetos.push_back({ 88, mapaOriginalAlto - (127 + 1), 48, 1 });   // Pared inferior interior
+    objetos.push_back({ 83, mapaOriginalAlto - (99 + 1), 58, 1 });   
+    objetos.push_back({ 83, mapaOriginalAlto - (99 + 34), 1, 34 });   
+    objetos.push_back({ 83, mapaOriginalAlto - (132 + 1), 58, 1 });  
+    objetos.push_back({ 140, mapaOriginalAlto - (99 + 34), 1, 34 });  
+    objetos.push_back({ 88, mapaOriginalAlto - (104 + 24), 1, 24 }); 
+    objetos.push_back({ 88, mapaOriginalAlto - (104 + 1), 48, 1 });   
+    objetos.push_back({ 88, mapaOriginalAlto - (127 + 1), 48, 1 });   
     objetos.push_back({ 135, mapaOriginalAlto - (104 + 24), 1, 24 }); // Pared derecha interior
     objetos.push_back({ 104, mapaOriginalAlto - (99 + 6), 16, 6 });   // Parte por donde saldrán los fantasmas
     objetos.push_back({ 89, mapaOriginalAlto - (105 + 22), 46, 22 }); // Área donde estarán los fantasmas
 
     // Segmento inferior
     objetos.push_back({ 0, mapaOriginalAlto - (243 + 5), 224, 5 });   // Pared inferior
-    objetos.push_back({ 59, mapaOriginalAlto - (123 + 34), 10, 34 }); // Obstáculo inferior 1
-    objetos.push_back({ 19, mapaOriginalAlto - (171 + 10), 26, 10 }); // Obstáculo inferior 2
-    objetos.push_back({ 35, mapaOriginalAlto - (181 + 24), 10, 24 }); // Obstáculo inferior 3
-    objetos.push_back({ 19, mapaOriginalAlto - (219 + 10), 74, 10 }); // Obstáculo inferior 4
-    objetos.push_back({ 59, mapaOriginalAlto - (195 + 25), 10, 25 }); // Obstáculo inferior 5
-    objetos.push_back({ 59, mapaOriginalAlto - (171 + 10), 34, 10 }); // Obstáculo inferior 6
-    objetos.push_back({ 83, mapaOriginalAlto - (147 + 10), 58, 10 }); // Obstáculo inferior 7
-    objetos.push_back({ 107, mapaOriginalAlto - (157 + 24), 10, 24 }); // Obstáculo inferior 8
-    objetos.push_back({ 83, mapaOriginalAlto - (195 + 10), 58, 10 }); // Obstáculo inferior 9
-    objetos.push_back({ 107, mapaOriginalAlto - (205 + 24), 10, 24 }); // Obstáculo inferior 10
-    objetos.push_back({ 131, mapaOriginalAlto - (171 + 10), 34, 10 }); // Obstáculo inferior 11
-    objetos.push_back({ 155, mapaOriginalAlto - (123 + 34), 10, 34 }); // Obstáculo inferior 12
-    objetos.push_back({ 155, mapaOriginalAlto - (195 + 25), 11, 25 }); // Obstáculo inferior 13
-    objetos.push_back({ 131, mapaOriginalAlto - (219 + 10), 74, 10 }); // Obstáculo inferior 14
-    objetos.push_back({ 179, mapaOriginalAlto - (171 + 10), 26, 10 }); // Obstáculo inferior 15
-    objetos.push_back({ 179, mapaOriginalAlto - (181 + 24), 10, 24 }); // Obstáculo inferior 16
-    objetos.push_back({ 179, mapaOriginalAlto - (123 + 34), 45, 34 }); // Obstáculo inferior 17
+    objetos.push_back({ 59, mapaOriginalAlto - (123 + 34), 10, 34 }); 
+    objetos.push_back({ 19, mapaOriginalAlto - (171 + 10), 26, 10 });
+    objetos.push_back({ 35, mapaOriginalAlto - (181 + 24), 10, 24 });
+    objetos.push_back({ 19, mapaOriginalAlto - (219 + 10), 74, 10 }); 
+    objetos.push_back({ 59, mapaOriginalAlto - (195 + 25), 10, 25 });
+    objetos.push_back({ 59, mapaOriginalAlto - (171 + 10), 34, 10 }); 
+    objetos.push_back({ 83, mapaOriginalAlto - (147 + 10), 58, 10 }); 
+    objetos.push_back({ 107, mapaOriginalAlto - (157 + 24), 10, 24 }); 
+    objetos.push_back({ 83, mapaOriginalAlto - (195 + 10), 58, 10 }); 
+    objetos.push_back({ 107, mapaOriginalAlto - (205 + 24), 10, 24 }); 
+    objetos.push_back({ 131, mapaOriginalAlto - (171 + 10), 34, 10 });
+    objetos.push_back({ 155, mapaOriginalAlto - (123 + 34), 10, 34 }); 
+    objetos.push_back({ 155, mapaOriginalAlto - (195 + 25), 11, 25 }); 
+    objetos.push_back({ 131, mapaOriginalAlto - (219 + 10), 74, 10 }); 
+    objetos.push_back({ 179, mapaOriginalAlto - (171 + 10), 26, 10 });
+    objetos.push_back({ 179, mapaOriginalAlto - (181 + 24), 10, 24 }); 
+    objetos.push_back({ 179, mapaOriginalAlto - (123 + 34), 45, 34 }); 
 
     // Paredes laterales inferiores
     objetos.push_back({ 0, mapaOriginalAlto - (156 + 92), 5, 92 });   // Pared izquierda inferior
     objetos.push_back({ 219, mapaOriginalAlto - (156 + 92), 5, 92 }); // Pared derecha inferior
 
     // Obstáculos adicionales
-    objetos.push_back({ 4, mapaOriginalAlto - (195 + 10), 17, 10 });  // Obstáculo inferior izquierdo
-    objetos.push_back({ 0, mapaOriginalAlto - (123 + 34), 45, 34 });  // Obstáculo inferior izquierdo adicional
-    objetos.push_back({ 203, mapaOriginalAlto - (195 + 10), 17, 10 }); // Obstáculo inferior derecho
-    objetos.push_back({ 179, mapaOriginalAlto - (123 + 34), 45, 34 }); // Obstáculo inferior derecho adicional
+    objetos.push_back({ 4, mapaOriginalAlto - (195 + 10), 17, 10 });  
+    objetos.push_back({ 0, mapaOriginalAlto - (123 + 34), 45, 34 });  
+    objetos.push_back({ 203, mapaOriginalAlto - (195 + 10), 17, 10 });
+    objetos.push_back({ 179, mapaOriginalAlto - (123 + 34), 45, 34 });
 }
 
 // Dibujar el mapa
