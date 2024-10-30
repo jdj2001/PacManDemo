@@ -8,6 +8,7 @@
 
 unsigned int pacmanTexture;  
 unsigned int mapaTexture;
+unsigned int mapaTexturePellets;
 
 
 float escalaMapa;  // Factor de escala global
@@ -16,7 +17,8 @@ float centroY;
 
 void initGame() {
     pacmanTexture = loadTexture("C:/sprite_personajes.png");
-    mapaTexture = loadTexture("C:/mapa1.png");
+    mapaTexture = loadTexture("C:/mapa2.png");
+    mapaTexturePellets = loadTexture("C:/mapa1.png");
 
     initMapa();  
 
@@ -26,8 +28,8 @@ void initGame() {
     float escalaY = ventanaAlto / 248.0f;
     escalaMapa = std::min(escalaX, escalaY);
 
-    centroX = (ventanaAncho - 227.0f * escalaMapa) / 2.0f;
-    centroY = (ventanaAlto - 248.0f * escalaMapa) / 2.0f;
+    centroX = (ventanaAncho - mapaOriginalAncho * escalaMapa) / 2.0f;
+    centroY = (ventanaAlto - mapaOriginalAlto * escalaMapa) / 2.0f;
 
     initPacman(centroX, centroY, escalaMapa);  
 }

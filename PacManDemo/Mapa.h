@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include "Pacman.h"
 #include <vector>
 
 void initMapa();   
@@ -13,5 +14,7 @@ bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlt
 extern float escalaMapa;  // Factor de escala global
 extern float centroX;     // Desplazamiento del mapa en X
 extern float centroY;     // Desplazamiento del mapa en Y
+extern float mapaOriginalAlto;
+extern float mapaOriginalAncho;
 
 #endif 

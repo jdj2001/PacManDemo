@@ -4,9 +4,9 @@
 
 float pacmanX = 0.0f;
 float pacmanY = 0.0f;
-float pacmanSpeed = 4.0f; 
-float pacmanAncho = 46.2f;
-float pacmanAlto = 46.2f;
+float pacmanSpeed = 3.0f; 
+float pacmanAncho = 46.0f;
+float pacmanAlto = 46.0f;
 
 enum Direccion { DERECHA, IZQUIERDA, ARRIBA, ABAJO };
 Direccion direccionActual = DERECHA;
@@ -94,15 +94,31 @@ void updatePacman() {
             break;
         }
 
+        float tunelIzquierdoX = centroX;
+        float tunelDerechoX = (223 * escalaMapa) + centroX;
+        float tunelYMin = (mapaOriginalAlto - 123) * escalaMapa + centroY;
+        float tunelYMax = (mapaOriginalAlto - 109) * escalaMapa + centroY;
+
+        //({ 0, mapaOriginalAlto - (109 + 14), 1, 14 });
+        //({ 223, mapaOriginalAlto - (109 + 14), 1, 14 });
+
+        if (nextX < tunelIzquierdoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
+            nextX = tunelDerechoX - pacmanAncho;  
+        }
+        else if (nextX > tunelDerechoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
+            nextX = tunelIzquierdoX;  
+        }
+
         if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
             pacmanX = nextX;
             pacmanY = nextY;
         }
         else {
-            enMovimiento = false; 
+            enMovimiento = false;
         }
     }
 }
+
 
 void processPacmanInput(unsigned char key) {
     float nextX = pacmanX;
