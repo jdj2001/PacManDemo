@@ -7,7 +7,10 @@
 #include <vector>
 
 void initMapa();   
+void initPellets();
 void drawMapa();   
+void drawPellets();
+//bool checkCollisionPellet(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
 bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);  // Función para detectar colisiones
 //void calcularPasillos();
 

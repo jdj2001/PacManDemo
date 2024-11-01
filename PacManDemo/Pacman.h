@@ -4,7 +4,10 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
+extern float pacmanAlto;
 extern float pacmanAncho;
+extern float pacmanX;
+extern float pacmanY;
 extern const float TUNNEL_LEFT;  // Coordenadas fuera del límite izquierdo
 extern const float TUNNEL_RIGHT; // Coordenadas fuera del límite derecho
 

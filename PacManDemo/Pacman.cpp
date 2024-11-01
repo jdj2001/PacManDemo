@@ -32,9 +32,9 @@ void initAnimaciones() {
     pacmanAnimaciones[0][ABAJO] = pacmanAnimaciones[0][DERECHA];      
 
     pacmanAnimaciones[1][DERECHA] = { 19.0f / 226.0f, (19.0f + 12.0f) / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };
-    pacmanAnimaciones[1][IZQUIERDA] = { (19.0f + 12.0f) / 226.0f, 19.0f / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };  
+    pacmanAnimaciones[1][IZQUIERDA] = { (19.0f + 12.0f) / 226.0f, 19.0f / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };  // mirrow
     pacmanAnimaciones[1][ARRIBA] = { 19.0f / 226.0f, (19.0f + 13.0f) / 226.0f, (34.0f + 12.0f) / 248.0f, 34.0f / 248.0f };
-    pacmanAnimaciones[1][ABAJO] = { 19.0f / 226.0f, (19.0f + 13.0f) / 226.0f, 34.0f / 248.0f, (34.0f + 12.0f) / 248.0f };   
+    pacmanAnimaciones[1][ABAJO] = { 19.0f / 226.0f, (19.0f + 13.0f) / 226.0f, 34.0f / 248.0f, (34.0f + 12.0f) / 248.0f };   //mirrow
 
     pacmanAnimaciones[2][DERECHA] = { 3.0f / 226.0f, (3.0f + 9.0f) / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };
     pacmanAnimaciones[2][IZQUIERDA] = { (3.0f + 9.0f) / 226.0f, 3.0f / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };  

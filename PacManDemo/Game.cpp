@@ -10,7 +10,6 @@ unsigned int pacmanTexture;
 unsigned int mapaTexture;
 unsigned int mapaTexturePellets;
 
-
 float escalaMapa;  // Factor de escala global
 float centroX;    
 float centroY;   
@@ -21,6 +20,7 @@ void initGame() {
     mapaTexturePellets = loadTexture("C:/mapa1.png");
 
     initMapa();  
+    initPellets();
 
     float ventanaAncho = 1720.0f;
     float ventanaAlto = 880.0f;
@@ -37,6 +37,7 @@ void initGame() {
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT);
     drawMapa();  
+    drawPellets();
     drawPacman(pacmanTexture);  
     glutSwapBuffers();
 }
