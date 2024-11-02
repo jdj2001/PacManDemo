@@ -8,7 +8,10 @@
 #include <algorithm>
 #include "stb_image.h"
 #include "TextureLoader.h"
+#include <string>
 #include <iostream>
+
+int puntaje = 0; // Puntaje inicial
 
 float mapaX = 0.0f;
 float mapaY = 0.0f;
@@ -470,6 +473,9 @@ void checkPelletCollision() {
         if (pacmanX < pelletX + pelletAncho && pacmanX + pacmanAncho > pelletX &&
             pacmanY < pelletY + pelletAncho && pacmanY + pacmanAlto > pelletY) {
 
+            // Actualiza el puntaje
+            puntaje += it->isBig ? 50 : 10;
+
             it = pellets.erase(it);  
             if (it == pellets.end()) break;
         }
@@ -500,6 +506,36 @@ void drawPellets() {
     }
     glDisable(GL_TEXTURE_2D);
 }
+
+void renderizarTexto(float x, float y, const char* texto) {
+    glRasterPos2f(x, y);  // Posición de inicio del texto
+    for (const char* c = texto; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);  // Fuente y caracteres
+    }
+}
+
+void renderizarPuntaje() {
+    std::string textoPuntaje = "Puntaje: " + std::to_string(puntaje); // Convierte el puntaje a texto
+
+    glPushAttrib(GL_CURRENT_BIT); // Guarda el estado de color actual
+    glColor3f(1.0f, 1.0f, 0.0f); // Color amarillo para el texto
+    renderizarTexto(1300.0f, 850.0f, textoPuntaje.c_str());
+    glPopAttrib(); // Restaura el color original
+}
+
+/*void renderizarTexto(float x, float y, const char* texto) {
+    glRasterPos2f(x, y);  // Posición de inicio del texto
+    for (const char* c = texto; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);  // Fuente y caracteres
+    }
+}
+// Función para mostrar el puntaje en pantalla
+void renderizarPuntaje() {
+    std::string textoPuntaje = "Puntaje: " + std::to_string(puntaje); // Convierte el puntaje a texto
+    glColor3f(1.0f, 1.0f, 0.0f); // Color amarillo para el texto
+    renderizarTexto(1300.0f, 850.0f, textoPuntaje.c_str()); // Posición fuera del mapa, ajustada según resolución
+}*/
+
 
 
 

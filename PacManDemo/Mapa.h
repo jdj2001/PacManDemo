@@ -14,6 +14,7 @@ void drawPellets();
 //bool checkCollisionPellet(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
 bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);  
 void checkPelletCollision();
+void renderizarPuntaje();
 
 extern float escalaMapa;  // Factor de escala global
 extern float centroX;     // Desplazamiento del mapa en X

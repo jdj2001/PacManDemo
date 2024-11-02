@@ -119,7 +119,23 @@ void updatePacman() {
         else {
             enMovimiento = false;
         }
-    }
+        /*
+        for (auto& pellet : pellets) {
+            if (checkCollision(pacmanX, pacmanY, pellet.x, pellet.y)) {
+                if (!pellet.isEaten) {
+                    pellet.isEaten = true;
+                    if (pellet.isBig) {
+                        soundManager.playSound("bigPellet");
+                        puntaje += 50;
+                    }
+                    else {
+                        soundManager.playSound("smallPellet");
+                        puntaje += 10;
+                    }
+                }
+            }
+        }
+    }*/
 }
 
 void processPacmanInput(unsigned char key) {

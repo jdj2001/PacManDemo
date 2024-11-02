@@ -5,6 +5,9 @@
 #include "Mapa.h"
 #include "TextureLoader.h"
 #include <iostream>
+#include "HUD.h"
+
+SoundManager soundManager;
 
 unsigned int pacmanTexture;  
 unsigned int mapaTexture;
@@ -18,6 +21,8 @@ void initGame() {
     pacmanTexture = loadTexture("C:/sprite_personajes.png");
     mapaTexture = loadTexture("C:/mapa2.png");
     mapaTexturePellets = loadTexture("C:/mapa1.png");
+    soundManager.loadSound("smallPellet", "path/to/small_pellet.wav");
+    soundManager.loadSound("bigPellet", "path/to/big_pellet.wav");
 
     initMapa();  
     initPellets();
@@ -39,6 +44,7 @@ void renderScene() {
     drawMapa();  
     drawPellets();
     drawPacman(pacmanTexture);  
+    renderizarPuntaje();
     glutSwapBuffers();
 }
 
