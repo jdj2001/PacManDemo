@@ -5,14 +5,16 @@
 #include <GL/glut.h>
 #include "Pacman.h"
 #include <vector>
+#include <cmath>
 
 void initMapa();   
 void initPellets();
 void drawMapa();   
 void drawPellets();
 //bool checkCollisionPellet(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
-bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);  // Función para detectar colisiones
+bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);  
 //void calcularPasillos();
+void checkPelletCollision();
 
 extern float escalaMapa;  // Factor de escala global
 extern float centroX;     // Desplazamiento del mapa en X

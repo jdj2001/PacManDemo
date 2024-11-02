@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Pacman.h"
 #include <vector>
+#include <cmath>
 #include <algorithm>
 #include "stb_image.h"
 #include "TextureLoader.h"
@@ -23,22 +24,17 @@ struct Objeto {
 };
 
 struct Pasillo {
-    float x, y, ancho, alto;  // Estructura para representar los pasillos
+    float x, y, ancho, alto;  
 };
 
 struct Pellet {
-    float x, y;  // Posiciones de los pellets
-    bool isBig;  // Indica si es grande
+    float x, y;  
+    bool isBig; 
 };
 
-std::vector<Pellet> pellets;   // Vector que contendrá la posición de los pellets
-
-// Dimensiones del sprite de los pellets
-float pelletsOriginalAlto = 248.0f;
-float pelletsOriginalAncho = 227.0f;
-
-std::vector<Objeto> objetos;  // Vector que contendrá los objetos (paredes y obstáculos)
-std::vector<Pasillo> pasillos;  // Vector para los pasillos
+std::vector<Pellet> pellets;   
+std::vector<Objeto> objetos;  
+std::vector<Pasillo> pasillos;  
 
 extern unsigned int mapaTexturePellets;  // Textura de mapa1.png
 extern float escalaMapa;  
@@ -166,15 +162,15 @@ bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlt
             nextX + pacmanAncho > objetoX &&
             nextY < objetoY + objetoAlto &&
             nextY + pacmanAlto > objetoY) {
-            return true;  // Colisión detectada
+            return true;  
         }
     }
-    return false;  // No hay colisión
+    return false; 
 }
 
 void initPellets() {
-    pellets.clear();  // Asegúrate de que el vector esté vacío al inicializar
-    int pelletSmallSize = 2;  // Tamaño de pellet pequeño
+    pellets.clear();  
+    int pelletSmallSize = 2; 
     int pelletBigSize = 8;
     // Pellets grandes
 
@@ -465,7 +461,20 @@ void initPellets() {
 
 }
 
+void checkPelletCollision() {
+    for (auto it = pellets.begin(); it != pellets.end(); ++it) {
+        float pelletX = it->x * escalaMapa + centroX;
+        float pelletY = (mapaOriginalAlto - it->y) * escalaMapa + centroY;
+        float pelletAncho = it->isBig ? 14.0f : 8.0f;  
 
+        if (pacmanX < pelletX + pelletAncho && pacmanX + pacmanAncho > pelletX &&
+            pacmanY < pelletY + pelletAncho && pacmanY + pacmanAlto > pelletY) {
+
+            it = pellets.erase(it);  
+            if (it == pellets.end()) break;
+        }
+    }
+}
 
 void drawPellets() {
     glEnable(GL_TEXTURE_2D);
@@ -473,13 +482,12 @@ void drawPellets() {
 
     for (const auto& pellet : pellets) {
         glBegin(GL_QUADS);
-        float size = pellet.isBig ? 32.0f : 8.0f;  // Tamaño del pellet
+        float size = pellet.isBig ? 32.0f : 8.0f;  
         float texLeft = pellet.isBig ? 8.0f / 227.0f : 11.0f / 227.0f;
         float texRight = pellet.isBig ? (8.0f + 8.0f) / 227.0f : (11.0f + 2.0f) / 227.0f;
         float texBottom = pellet.isBig ? 24.0f / 248.0f : 19.0f / 248.0f;
         float texTop = pellet.isBig ? (24.0f + 8.0f) / 248.0f : (19.0f + 2.0f) / 248.0f;
 
-        // Ajustar las coordenadas según la escala y el centro
         float drawX = (pellet.x * escalaMapa) + centroX;
         float drawY = ((mapaOriginalAlto - pellet.y) * escalaMapa) + centroY;
 
@@ -492,23 +500,6 @@ void drawPellets() {
     }
     glDisable(GL_TEXTURE_2D);
 }
-
-/*void drawPellets(GLuint textureID) {
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glBegin(GL_QUADS);
-    for (const auto& pellet : pellets) {
-        glTexCoord2f(0.0f, 0.0f); glVertex2f(centroX, centroY);
-        glTexCoord2f(1.0f, 0.0f); glVertex2f(centroX + pellet.ancho, centroY);
-        glTexCoord2f(1.0f, 1.0f); glVertex2f(centroX + pellet.ancho, centroY + pellet.alto);
-        glTexCoord2f(0.0f, 1.0f); glVertex2f(centroX, centroY + pellet.alto);
-    }
-    
-
-    glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-}*/
 
 
 

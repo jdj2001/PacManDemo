@@ -45,6 +45,7 @@ void renderScene() {
 
 void updateGame() {
     updatePacman();
+    checkPelletCollision();
 }
 
 void handleInput(unsigned char key) {
