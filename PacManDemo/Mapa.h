@@ -13,7 +13,6 @@ void drawMapa();
 void drawPellets();
 //bool checkCollisionPellet(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
 bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);  
-//void calcularPasillos();
 void checkPelletCollision();
 
 extern float escalaMapa;  // Factor de escala global
