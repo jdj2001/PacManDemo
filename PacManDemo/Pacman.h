@@ -8,8 +8,8 @@ extern float pacmanAlto;
 extern float pacmanAncho;
 extern float pacmanX;
 extern float pacmanY;
-extern const float TUNNEL_LEFT;  // Coordenadas fuera del límite izquierdo
-extern const float TUNNEL_RIGHT; // Coordenadas fuera del límite derecho
+extern const float TUNNEL_LEFT;  
+extern const float TUNNEL_RIGHT; 
 
 void initPacman(float centroX, float centroY, float escalaMapa);
 

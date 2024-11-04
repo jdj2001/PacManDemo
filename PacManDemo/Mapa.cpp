@@ -10,8 +10,10 @@
 #include "TextureLoader.h"
 #include <string>
 #include <iostream>
+#include <SDL.h>
+#include <SDL_mixer.h>
 
-int puntaje = 0; // Puntaje inicial
+int puntaje = 0; 
 
 float mapaX = 0.0f;
 float mapaY = 0.0f;
@@ -23,26 +25,27 @@ float pelletGrandeX = 0.0f;
 float pelletGrandeY = 0.0f;
 
 struct Objeto {
-    float x, y, ancho, alto;  
+    float x, y, ancho, alto;
 };
 
 struct Pasillo {
-    float x, y, ancho, alto;  
+    float x, y, ancho, alto;
 };
 
 struct Pellet {
-    float x, y;  
-    bool isBig; 
+    float x, y;
+    bool isBig;
+    bool isEaten = false;
 };
 
-std::vector<Pellet> pellets;   
-std::vector<Objeto> objetos;  
-std::vector<Pasillo> pasillos;  
+std::vector<Pellet> pellets;
+std::vector<Objeto> objetos;
+std::vector<Pasillo> pasillos;
 
-extern unsigned int mapaTexturePellets;  // Textura de mapa1.png
-extern float escalaMapa;  
-extern float centroX;     
-extern float centroY;  
+extern unsigned int mapaTexturePellets; 
+extern float escalaMapa;
+extern float centroX;
+extern float centroY;
 extern float pacmanX, pacmanY, pacmanAncho, pacmanAlto;
 
 float mapaOriginalAlto = 248.0f;
@@ -165,16 +168,17 @@ bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlt
             nextX + pacmanAncho > objetoX &&
             nextY < objetoY + objetoAlto &&
             nextY + pacmanAlto > objetoY) {
-            return true;  
+            return true;
         }
     }
-    return false; 
+    return false;
 }
 
 void initPellets() {
-    pellets.clear();  
-    int pelletSmallSize = 2; 
+    pellets.clear();
+    int pelletSmallSize = 2;
     int pelletBigSize = 8;
+
     // Pellets grandes
 
     // SELECTION 8 × 8 @ (8, 24)
@@ -464,31 +468,62 @@ void initPellets() {
 
 }
 
-void checkPelletCollision() {
-    for (auto it = pellets.begin(); it != pellets.end(); ++it) {
-        float pelletX = it->x * escalaMapa + centroX;
-        float pelletY = (mapaOriginalAlto - it->y) * escalaMapa + centroY;
-        float pelletAncho = it->isBig ? 14.0f : 8.0f;  
+void mostrarVentanaVictoria() {
+    int menuID = glutCreateMenu([](int option) {
+        if (option == 0) {
+            resetGame();
+        }
+        else if (option == 1) {
+            std::cout << "Regresando al menú..." << std::endl;
+        }
+        });
 
-        if (pacmanX < pelletX + pelletAncho && pacmanX + pacmanAncho > pelletX &&
+    glutAddMenuEntry("Volver a jugar", 0);
+    glutAddMenuEntry("Regresar al menú", 1);
+
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+    std::cout << "¡Felicitaciones! Has ganado el nivel." << std::endl;
+}
+
+void checkPelletCollision() {
+    bool allPelletsEaten = true;
+
+    for (auto& pellet : pellets) {
+        if (pellet.isEaten) continue;
+
+        float pelletX = pellet.x * escalaMapa + centroX;
+        float pelletY = (mapaOriginalAlto - pellet.y) * escalaMapa + centroY;
+        float pelletAncho = pellet.isBig ? 14.0f : 8.0f;
+
+        if (!pellet.isEaten &&
+            pacmanX < pelletX + pelletAncho && pacmanX + pacmanAncho > pelletX &&
             pacmanY < pelletY + pelletAncho && pacmanY + pacmanAlto > pelletY) {
 
-            // Actualiza el puntaje
-            puntaje += it->isBig ? 50 : 10;
+            puntaje += pellet.isBig ? 50 : 10;
+            Mix_PlayChannel(-1, eatDotSound, 0);
+            pellet.isEaten = true;  
+        }
 
-            it = pellets.erase(it);  
-            if (it == pellets.end()) break;
+        if (!pellet.isEaten) {
+            allPelletsEaten = false;
         }
     }
+
+    if (allPelletsEaten) {
+        mostrarVentanaFinDeNivel();
+    }
 }
+
 
 void drawPellets() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, mapaTexturePellets);
 
     for (const auto& pellet : pellets) {
+        if (pellet.isEaten) continue; 
+
         glBegin(GL_QUADS);
-        float size = pellet.isBig ? 32.0f : 8.0f;  
+        float size = pellet.isBig ? 32.0f : 8.0f;
         float texLeft = pellet.isBig ? 8.0f / 227.0f : 11.0f / 227.0f;
         float texRight = pellet.isBig ? (8.0f + 8.0f) / 227.0f : (11.0f + 2.0f) / 227.0f;
         float texBottom = pellet.isBig ? 24.0f / 248.0f : 19.0f / 248.0f;
@@ -504,23 +539,25 @@ void drawPellets() {
 
         glEnd();
     }
+
     glDisable(GL_TEXTURE_2D);
 }
 
+
 void renderizarTexto(float x, float y, const char* texto) {
-    glRasterPos2f(x, y);  // Posición de inicio del texto
+    glRasterPos2f(x, y);  
     for (const char* c = texto; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);  // Fuente y caracteres
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);  
     }
 }
 
 void renderizarPuntaje() {
-    std::string textoPuntaje = "Puntaje: " + std::to_string(puntaje); // Convierte el puntaje a texto
+    std::string textoPuntaje = "Puntaje: " + std::to_string(puntaje); 
 
-    glPushAttrib(GL_CURRENT_BIT); // Guarda el estado de color actual
-    glColor3f(1.0f, 1.0f, 0.0f); // Color amarillo para el texto
+    glPushAttrib(GL_CURRENT_BIT);
+    glColor3f(1.0f, 1.0f, 0.0f); 
     renderizarTexto(1300.0f, 850.0f, textoPuntaje.c_str());
-    glPopAttrib(); // Restaura el color original
+    glPopAttrib();
 }
 
 /*void renderizarTexto(float x, float y, const char* texto) {
@@ -535,11 +572,3 @@ void renderizarPuntaje() {
     glColor3f(1.0f, 1.0f, 0.0f); // Color amarillo para el texto
     renderizarTexto(1300.0f, 850.0f, textoPuntaje.c_str()); // Posición fuera del mapa, ajustada según resolución
 }*/
-
-
-
-
-
-
-
-

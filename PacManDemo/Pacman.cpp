@@ -114,62 +114,46 @@ void updatePacman() {
         if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
             pacmanX = nextX;
             pacmanY = nextY;
-            
+
         }
         else {
             enMovimiento = false;
         }
-        /*
-        for (auto& pellet : pellets) {
-            if (checkCollision(pacmanX, pacmanY, pellet.x, pellet.y)) {
-                if (!pellet.isEaten) {
-                    pellet.isEaten = true;
-                    if (pellet.isBig) {
-                        soundManager.playSound("bigPellet");
-                        puntaje += 50;
-                    }
-                    else {
-                        soundManager.playSound("smallPellet");
-                        puntaje += 10;
-                    }
-                }
-            }
-        }
-    }*/
-}
-
-void processPacmanInput(unsigned char key) {
-    float nextX = pacmanX;
-    float nextY = pacmanY;
-
-    switch (key) {
-    case 'd':
-        nextX += pacmanSpeed;
-        if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
-            direccionActual = DERECHA;
-            enMovimiento = true;
-        }
-        break;
-    case 'a':
-        nextX -= pacmanSpeed;
-        if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
-            direccionActual = IZQUIERDA;
-            enMovimiento = true;
-        }
-        break;
-    case 'w':
-        nextY += pacmanSpeed;
-        if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
-            direccionActual = ARRIBA;
-            enMovimiento = true;
-        }
-        break;
-    case 's':
-        nextY -= pacmanSpeed;
-        if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
-            direccionActual = ABAJO;
-            enMovimiento = true;
-        }
-        break;
     }
-}
+    }
+
+    void processPacmanInput(unsigned char key) {
+        float nextX = pacmanX;
+        float nextY = pacmanY;
+
+        switch (key) {
+        case 'd':
+            nextX += pacmanSpeed;
+            if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
+                direccionActual = DERECHA;
+                enMovimiento = true;
+            }
+            break;
+        case 'a':
+            nextX -= pacmanSpeed;
+            if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
+                direccionActual = IZQUIERDA;
+                enMovimiento = true;
+            }
+            break;
+        case 'w':
+            nextY += pacmanSpeed;
+            if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
+                direccionActual = ARRIBA;
+                enMovimiento = true;
+            }
+            break;
+        case 's':
+            nextY -= pacmanSpeed;
+            if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
+                direccionActual = ABAJO;
+                enMovimiento = true;
+            }
+            break;
+        }
+    }

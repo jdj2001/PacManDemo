@@ -1,4 +1,4 @@
-#ifndef HUD_H
+/*#ifndef HUD_H
 #define HUD_H
 
 #include <string>
@@ -18,4 +18,4 @@ private:
     void closeAudioSystem(); // Libera los recursos de audio
 };
 
-#endif
+#endif*/

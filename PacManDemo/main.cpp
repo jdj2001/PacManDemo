@@ -43,8 +43,11 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutTimerFunc(16, update, 0);
+    glutMouseFunc(mouseCallback);
 
     glutMainLoop();  
+
+    cleanupGame();
 
     return 0;
 }

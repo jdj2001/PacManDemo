@@ -7,12 +7,14 @@
 #include <vector>
 #include <cmath>
 
-void initMapa();   
+void initMapa();
 void initPellets();
-void drawMapa();   
+void drawMapa();
 void drawPellets();
+void renderizarTexto(float x, float y, const char* texto);
+void renderizarPuntaje();
 //bool checkCollisionPellet(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
-bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);  
+bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
 void checkPelletCollision();
 void renderizarPuntaje();
 
@@ -21,5 +23,6 @@ extern float centroX;     // Desplazamiento del mapa en X
 extern float centroY;     // Desplazamiento del mapa en Y
 extern float mapaOriginalAlto;
 extern float mapaOriginalAncho;
+extern int puntaje;
 
 #endif 

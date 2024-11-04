@@ -1,4 +1,4 @@
-#include "HUD.h"
+/*#include "HUD.h"
 #include <iostream>
 
 // Incluir la biblioteca de audio según la que elijas, por ejemplo, SDL_mixer
@@ -48,4 +48,4 @@ void SoundManager::playSound(const std::string& soundName) {
 
 void SoundManager::stopAllSounds() {
     Mix_HaltChannel(-1);  // Detiene todos los canales de sonido
-}
+}*/
