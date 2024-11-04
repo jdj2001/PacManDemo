@@ -138,6 +138,7 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mapa.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Pacman.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Mapa.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="Pacman.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureLoader.h" />

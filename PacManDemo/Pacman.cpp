@@ -76,49 +76,51 @@ void updatePacmanAnimacion() {
 }
 
 void updatePacman() {
-    if (enMovimiento) {
-        updatePacmanAnimacion();
-        float nextX = pacmanX;
-        float nextY = pacmanY;
+    //if (isGamePaused == false || isLevelStarting == true) {
+        if (enMovimiento) {
+            updatePacmanAnimacion();
+            float nextX = pacmanX;
+            float nextY = pacmanY;
 
-        switch (direccionActual) {
-        case DERECHA:
-            nextX += pacmanSpeed;
-            break;
-        case IZQUIERDA:
-            nextX -= pacmanSpeed;
-            break;
-        case ARRIBA:
-            nextY += pacmanSpeed;
-            break;
-        case ABAJO:
-            nextY -= pacmanSpeed;
-            break;
-        }
+            switch (direccionActual) {
+            case DERECHA:
+                nextX += pacmanSpeed;
+                break;
+            case IZQUIERDA:
+                nextX -= pacmanSpeed;
+                break;
+            case ARRIBA:
+                nextY += pacmanSpeed;
+                break;
+            case ABAJO:
+                nextY -= pacmanSpeed;
+                break;
+            }
 
-        float tunelIzquierdoX = centroX;
-        float tunelDerechoX = (223 * escalaMapa) + centroX;
-        float tunelYMin = (mapaOriginalAlto - 123) * escalaMapa + centroY;
-        float tunelYMax = (mapaOriginalAlto - 109) * escalaMapa + centroY;
+            float tunelIzquierdoX = centroX;
+            float tunelDerechoX = (223 * escalaMapa) + centroX;
+            float tunelYMin = (mapaOriginalAlto - 123) * escalaMapa + centroY;
+            float tunelYMax = (mapaOriginalAlto - 109) * escalaMapa + centroY;
 
-        //({ 0, mapaOriginalAlto - (109 + 14), 1, 14 });
-        //({ 223, mapaOriginalAlto - (109 + 14), 1, 14 });
+            //({ 0, mapaOriginalAlto - (109 + 14), 1, 14 });
+            //({ 223, mapaOriginalAlto - (109 + 14), 1, 14 });
 
-        if (nextX < tunelIzquierdoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
-            nextX = tunelDerechoX - pacmanAncho;
-        }
-        else if (nextX > tunelDerechoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
-            nextX = tunelIzquierdoX;
-        }
+            if (nextX < tunelIzquierdoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
+                nextX = tunelDerechoX - pacmanAncho;
+            }
+            else if (nextX > tunelDerechoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
+                nextX = tunelIzquierdoX;
+            }
 
-        if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
-            pacmanX = nextX;
-            pacmanY = nextY;
+            if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
+                pacmanX = nextX;
+                pacmanY = nextY;
 
-        }
-        else {
-            enMovimiento = false;
-        }
+            }
+            else {
+                enMovimiento = false;
+            }
+        //}
     }
     }
 

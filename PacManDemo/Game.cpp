@@ -13,8 +13,9 @@ unsigned int pacmanTexture;
 unsigned int mapaTexture;
 unsigned int mapaTexturePellets;
 bool showEndLevelDialog = false;
+bool isGamePaused = false;
 
-float escalaMapa;  
+float escalaMapa;
 float centroX;
 float centroY;
 
@@ -55,7 +56,7 @@ void initGame() {
 
 void mostrarVentanaFinDeNivel() {
     showEndLevelDialog = true;
-    glutPostRedisplay(); 
+    glutPostRedisplay();
 }
 
 void cleanupGame() {
@@ -73,18 +74,21 @@ void renderScene() {
 
     Uint32 currentTime = SDL_GetTicks();
     if (isLevelStarting && (currentTime - levelStartTime < 5000)) {
-        glPushAttrib(GL_CURRENT_BIT);  
-        glColor3f(1.0f, 1.0f, 0.0f);  
+        glPushAttrib(GL_CURRENT_BIT);
+        glColor3f(1.0f, 1.0f, 0.0f);
         renderizarTexto(800.0f, 440.0f, "¿Listo?");
-        glPopAttrib();  
+        glPopAttrib();
+        isGamePaused = true;
     }
     else {
         isLevelStarting = false;
+        isGamePaused = false;
     }
 
     if (showEndLevelDialog) {
+        isGamePaused = true;
         glPushAttrib(GL_CURRENT_BIT);
-        
+
         glColor3f(0.0f, 0.0f, 0.0f);
         glBegin(GL_QUADS);
         glVertex2f(620, 420);
@@ -126,18 +130,36 @@ void renderScene() {
 
         glPopAttrib();
     }
-    
+
     glutSwapBuffers();
 }
 
+/*void resetGame() {
+    showEndLevelDialog = false;
+    intermissionMusic = nullptr;
+    eatDotSound = nullptr;
+    isLevelStarting = true;
+    levelStartTime = 0;
+    puntaje = 0;
+    initMapa();
+    initPellets();
+    initPacman(centroX, centroY, escalaMapa);
+    showEndLevelDialog = false;
+    glutPostRedisplay();
+}*/
 void resetGame() {
-    puntaje = 0;         
-    initMapa();              
-    initPellets();           
-    initPacman(centroX, centroY, escalaMapa);  
-    showEndLevelDialog = false;  
-    glutPostRedisplay();     
+    puntaje = 0;
+    initMapa();
+    initPellets();
+    initPacman(centroX, centroY, escalaMapa);
+    showEndLevelDialog = false;
+    isGamePaused = false;
+    isLevelStarting = true;
+    levelStartTime = SDL_GetTicks();
+    Mix_PlayMusic(intermissionMusic, 0);
+    glutPostRedisplay();
 }
+
 
 void goToMainMenu() {
     std::cout << "Regresando al menú principal..." << std::endl;
@@ -147,10 +169,10 @@ void goToMainMenu() {
 void mouseCallback(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         float gameX = x;
-        float gameY = 880 - y; 
+        float gameY = 880 - y;
 
-        std::cout << "Clic en: (" << gameX << ", " << gameY << ")" << std::endl; 
-        
+        std::cout << "Clic en: (" << gameX << ", " << gameY << ")" << std::endl;
+
         //VOLVER A JUGAR
         if (gameX >= 650 && gameX <= 850 && gameY >= 500 && gameY <= 570) {
             resetGame();
@@ -163,21 +185,24 @@ void mouseCallback(int button, int state, int x, int y) {
     }
 }
 
-
-
-
 void updateGame() {
     /*if (!showEndLevelDialog) {  // Solo actualiza si no está la ventana emergente activa
         updatePacman();
         checkPelletCollision();
     }*/
     Uint32 currentTime = SDL_GetTicks();
-    if (!isLevelStarting || (currentTime - levelStartTime >= 5000)) {
+    /*if (!isLevelStarting || (currentTime - levelStartTime >= 5000)) {
+        updatePacman();
+        checkPelletCollision();
+    }*/
+    if (!isGamePaused && (!isLevelStarting || (currentTime - levelStartTime >= 5000))) {
         updatePacman();
         checkPelletCollision();
     }
 }
 
 void handleInput(unsigned char key) {
-    processPacmanInput(key);
+    if (!isGamePaused) {
+        processPacmanInput(key);
+    }
 }

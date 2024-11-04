@@ -57,6 +57,9 @@
     <ClCompile Include="Source.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pacman.h">
@@ -78,6 +81,9 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="TextureLoader.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

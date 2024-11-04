@@ -8,6 +8,8 @@ extern unsigned int mapaTexture;
 extern unsigned int mapaTexturePellets;
 extern bool showEndLevelDialog;  
 extern Mix_Chunk* eatDotSound;
+extern bool isGamePaused;
+extern bool isLevelStarting;
 
 void resetGame();  
 void goToMainMenu();  
