@@ -2,20 +2,41 @@
 #include <GL/glew.h> 
 #include <GL/glut.h>  
 #include "Game.h"
+#include "Menu.h"
 #include <iostream>
+#include "Mapa.h"
 
 void display() {
-    renderScene();  
+    //renderScene();  
+    if (gameStarted) {
+        renderScene();  
+    }
+    else {
+        renderMenu();   
+    }
 }
 
 void update(int value) {
-    updateGame();   
+    if (gameStarted) {
+        updateGame();  
+    }
     glutPostRedisplay();  
     glutTimerFunc(16, update, 0);  
 }
 
 void keyboard(unsigned char key, int x, int y) {
-    handleInput(key);  
+    if (gameStarted) {
+        handleInput(key); 
+    }
+}
+
+void mouseClick(int button, int state, int x, int y) {
+    if (gameStarted) {
+        mouseCallback(button, state, x, y);
+    }
+    else {
+        handleMenuMouse(button, state, x, y); 
+    }
 }
 
 int main(int argc, char** argv) {
@@ -24,7 +45,6 @@ int main(int argc, char** argv) {
     glutInitWindowSize(1720, 880);
     glutCreateWindow("Pac-Man Demo");
 
-    glutInitWindowSize(1720, 880); 
     glViewport(0, 0, 1720, 880);   
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -43,7 +63,8 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutTimerFunc(16, update, 0);
-    glutMouseFunc(mouseCallback);
+    glutMouseFunc(mouseClick);
+    //glutMouseFunc(mouseCallback);
 
     glutMainLoop();  
 

@@ -10,10 +10,12 @@ extern bool showEndLevelDialog;
 extern Mix_Chunk* eatDotSound;
 extern bool isGamePaused;
 extern bool isLevelStarting;
+extern Mix_Music* intermissionMusic;
+extern Uint32 levelStartTime;
+extern bool isMusicPlaying;
 
 void resetGame();  
 void goToMainMenu();  
-
 
 void handleInput(unsigned char);
 void initGame(void);

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include "Menu.h"
 
 int puntaje = 0; 
 
@@ -182,7 +183,7 @@ void initPellets() {
     // Pellets grandes
 
     // SELECTION 8 × 8 @ (8, 24)
-    /*pellets.push_back({8, 31, true});
+    pellets.push_back({8, 31, true});
 
     // SELECTION 8 × 8 @ (208, 24)
     pellets.push_back({ 208, 31, true });
@@ -457,7 +458,7 @@ void initPellets() {
     for (int i = 0; i < 5; i++) {
         Pellet smallPellet = { 179 + i * (pelletSmallSize + 6), 211, false };
         pellets.push_back(smallPellet);
-    }*/
+    }
 
     // SELECTION 2 × 10 @ (211, 219)
     for (int i = 0; i < 2; i++) {
@@ -466,23 +467,6 @@ void initPellets() {
     }
 
 
-}
-
-void mostrarVentanaVictoria() {
-    int menuID = glutCreateMenu([](int option) {
-        if (option == 0) {
-            resetGame();
-        }
-        else if (option == 1) {
-            std::cout << "Regresando al menú..." << std::endl;
-        }
-        });
-
-    glutAddMenuEntry("Volver a jugar", 0);
-    glutAddMenuEntry("Regresar al menú", 1);
-
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
-    std::cout << "¡Felicitaciones! Has ganado el nivel." << std::endl;
 }
 
 void checkPelletCollision() {
@@ -509,7 +493,10 @@ void checkPelletCollision() {
         }
     }
 
-    if (allPelletsEaten) {
+    /*if (allPelletsEaten) {
+        mostrarVentanaFinDeNivel();
+    }*/
+    if (allPelletsEaten && gameStarted) { 
         mostrarVentanaFinDeNivel();
     }
 }
