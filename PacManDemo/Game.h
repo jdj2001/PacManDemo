@@ -22,6 +22,7 @@ void initGame(void);
 void renderScene(void);
 void updateGame(void);
 void mostrarVentanaFinDeNivel();
+void mostrarVentanaDerrota();
 void mouseCallback(int button, int state, int x, int y);
 void cleanupGame();
 

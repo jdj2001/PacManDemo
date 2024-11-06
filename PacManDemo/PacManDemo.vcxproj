@@ -79,13 +79,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\include\SDL2;D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\lib\x64;D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\include\SDL2;D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2main.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\lib\x86;D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\lib\x64;D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\lib;D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\include\SDL2;D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\VisualStudioCommunity\IDE\VC\Auxiliary\VS\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -1,3 +1,5 @@
+#include <GL/glew.h>
+#include <GL/glut.h>
 #include "Pacman.h"
 #include "Game.h"
 #include "Mapa.h"
@@ -9,6 +11,13 @@ float pacmanY = 0.0f;
 float pacmanSpeed = 3.0f;
 float pacmanAncho = 46.0f;
 float pacmanAlto = 46.0f;
+
+int vidas = 3;  
+bool isDying = false; 
+
+int deathAnimIndex = 0;
+float deathAnimDelay = 100;
+float lastDeathAnimTime = 0;
 
 enum Direccion { DERECHA, IZQUIERDA, ARRIBA, ABAJO };
 Direccion direccionActual = DERECHA;
@@ -26,6 +35,14 @@ struct Animacion {
 };
 
 Animacion pacmanAnimaciones[3][4];
+
+extern const Animacion vidaIcono = { 133.0f / 226.0f, (133.0f + 10.0f) / 226.0f, 18.0f / 248.0f, (18.0f + 11.0f) / 248.0f };
+
+std::vector<Animacion> deathAnimaciones = {
+    {51.0f / 226.0f, (51.0f + 13.0f) / 226.0f, 3.0f / 248.0f, (3.0f + 9.0f) / 248.0f},
+    {66.0f / 226.0f, (66.0f + 15.0f) / 226.0f, 4.0f / 248.0f, (4.0f + 8.0f) / 248.0f},
+    //FALTAN ANIMACIONES
+};
 
 void initAnimaciones() {
     pacmanAnimaciones[0][DERECHA] = { 35.0f / 226.0f, (35.0f + 13.0f) / 226.0f, (1.0f + 13.0f) / 248.0f, 1.0f / 248.0f };
@@ -49,6 +66,71 @@ void initPacman(float centroX, float centroY, float escalaMapa) {
     pacmanY = centroY + 101.5f * escalaMapa;
 
     initAnimaciones();
+
+    vidas = 3;
+    isDying = false;
+}
+
+void renderizarVidas() {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, pacmanTexture);
+
+    for (int i = 0; i < vidas; ++i) {
+        float x = 1500.0f + i * 30.0f;
+        float y = 850.0f;
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(vidaIcono.texCoordLeft, vidaIcono.texCoordBottom); glVertex2f(x, y);
+        glTexCoord2f(vidaIcono.texCoordRight, vidaIcono.texCoordBottom); glVertex2f(x + 20.0f, y);
+        glTexCoord2f(vidaIcono.texCoordRight, vidaIcono.texCoordTop); glVertex2f(x + 20.0f, y + 20.0f);
+        glTexCoord2f(vidaIcono.texCoordLeft, vidaIcono.texCoordTop); glVertex2f(x, y + 20.0f);
+        glEnd();
+    }
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawDeathAnim(GLuint textureID) {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    Animacion deathFrame = deathAnimaciones[deathAnimIndex];
+    glBegin(GL_QUADS);
+    glTexCoord2f(deathFrame.texCoordLeft, deathFrame.texCoordBottom); glVertex2f(pacmanX, pacmanY);
+    glTexCoord2f(deathFrame.texCoordRight, deathFrame.texCoordBottom); glVertex2f(pacmanX + pacmanAncho, pacmanY);
+    glTexCoord2f(deathFrame.texCoordRight, deathFrame.texCoordTop); glVertex2f(pacmanX + pacmanAncho, pacmanY + pacmanAlto);
+    glTexCoord2f(deathFrame.texCoordLeft, deathFrame.texCoordTop); glVertex2f(pacmanX, pacmanY + pacmanAlto);
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+void loseLife() {
+    if (vidas > 0) {
+        vidas--;
+        if (vidas == 0) {
+            isDying = true;
+            deathAnimIndex = 0; 
+        }
+    }
+}
+
+void updateDeathAnim() {
+    if (isDying) {
+        float currentTime = glutGet(GLUT_ELAPSED_TIME);
+        if (currentTime - lastDeathAnimTime > deathAnimDelay) {
+            if (deathAnimIndex < deathAnimaciones.size() - 1) {
+                deathAnimIndex++;
+                lastDeathAnimTime = currentTime;
+            }
+            else {
+                isDying = false;
+                if (vidas == 0) {
+                    mostrarVentanaDerrota();
+                }
+            }
+        }
+    }
 }
 
 void drawPacman(GLuint textureID) {
@@ -65,6 +147,24 @@ void drawPacman(GLuint textureID) {
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
+
+    if (isDying) {
+        drawDeathAnim(textureID);
+    }
+    else {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        Animacion currentAnim = pacmanAnimaciones[animacionIndex][direccionActual];
+        glBegin(GL_QUADS);
+        glTexCoord2f(currentAnim.texCoordLeft, currentAnim.texCoordBottom); glVertex2f(pacmanX, pacmanY);
+        glTexCoord2f(currentAnim.texCoordRight, currentAnim.texCoordBottom); glVertex2f(pacmanX + pacmanAncho, pacmanY);
+        glTexCoord2f(currentAnim.texCoordRight, currentAnim.texCoordTop); glVertex2f(pacmanX + pacmanAncho, pacmanY + pacmanAlto);
+        glTexCoord2f(currentAnim.texCoordLeft, currentAnim.texCoordTop); glVertex2f(pacmanX, pacmanY + pacmanAlto);
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+    }
 }
 
 void updatePacmanAnimacion() {
@@ -76,86 +176,85 @@ void updatePacmanAnimacion() {
 }
 
 void updatePacman() {
-    //if (isGamePaused == false || isLevelStarting == true) {
-        if (enMovimiento) {
-            updatePacmanAnimacion();
-            float nextX = pacmanX;
-            float nextY = pacmanY;
 
-            switch (direccionActual) {
-            case DERECHA:
-                nextX += pacmanSpeed;
-                break;
-            case IZQUIERDA:
-                nextX -= pacmanSpeed;
-                break;
-            case ARRIBA:
-                nextY += pacmanSpeed;
-                break;
-            case ABAJO:
-                nextY -= pacmanSpeed;
-                break;
-            }
-
-            float tunelIzquierdoX = centroX;
-            float tunelDerechoX = (223 * escalaMapa) + centroX;
-            float tunelYMin = (mapaOriginalAlto - 123) * escalaMapa + centroY;
-            float tunelYMax = (mapaOriginalAlto - 109) * escalaMapa + centroY;
-
-            //({ 0, mapaOriginalAlto - (109 + 14), 1, 14 });
-            //({ 223, mapaOriginalAlto - (109 + 14), 1, 14 });
-
-            if (nextX < tunelIzquierdoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
-                nextX = tunelDerechoX - pacmanAncho;
-            }
-            else if (nextX > tunelDerechoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
-                nextX = tunelIzquierdoX;
-            }
-
-            if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
-                pacmanX = nextX;
-                pacmanY = nextY;
-
-            }
-            else {
-                enMovimiento = false;
-            }
-        //}
+    if (isDying) {
+        updateDeathAnim();
     }
-    }
-
-    void processPacmanInput(unsigned char key) {
+    else if (enMovimiento) {
+        updatePacmanAnimacion();
         float nextX = pacmanX;
         float nextY = pacmanY;
 
-        switch (key) {
-        case 'd':
+        switch (direccionActual) {
+        case DERECHA:
             nextX += pacmanSpeed;
-            if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
-                direccionActual = DERECHA;
-                enMovimiento = true;
-            }
             break;
-        case 'a':
+        case IZQUIERDA:
             nextX -= pacmanSpeed;
-            if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
-                direccionActual = IZQUIERDA;
-                enMovimiento = true;
-            }
             break;
-        case 'w':
+        case ARRIBA:
             nextY += pacmanSpeed;
-            if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
-                direccionActual = ARRIBA;
-                enMovimiento = true;
-            }
             break;
-        case 's':
+        case ABAJO:
             nextY -= pacmanSpeed;
-            if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
-                direccionActual = ABAJO;
-                enMovimiento = true;
-            }
             break;
         }
+
+        float tunelIzquierdoX = centroX;
+        float tunelDerechoX = (223 * escalaMapa) + centroX;
+        float tunelYMin = (mapaOriginalAlto - 123) * escalaMapa + centroY;
+        float tunelYMax = (mapaOriginalAlto - 109) * escalaMapa + centroY;
+
+        if (nextX < tunelIzquierdoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
+            nextX = tunelDerechoX - pacmanAncho;
+        }
+        else if (nextX > tunelDerechoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
+            nextX = tunelIzquierdoX;
+        }
+
+        if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
+            pacmanX = nextX;
+            pacmanY = nextY;
+
+        }
+        else {
+            enMovimiento = false;
+        }
     }
+}
+
+void processPacmanInput(unsigned char key) {
+    float nextX = pacmanX;
+    float nextY = pacmanY;
+
+    switch (key) {
+    case 'd':
+        nextX += pacmanSpeed;
+        if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
+            direccionActual = DERECHA;
+            enMovimiento = true;
+        }
+        break;
+    case 'a':
+        nextX -= pacmanSpeed;
+        if (!checkCollision(nextX, pacmanY, pacmanAncho, pacmanAlto)) {
+            direccionActual = IZQUIERDA;
+            enMovimiento = true;
+        }
+        break;
+    case 'w':
+        nextY += pacmanSpeed;
+        if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
+            direccionActual = ARRIBA;
+            enMovimiento = true;
+        }
+        break;
+    case 's':
+        nextY -= pacmanSpeed;
+        if (!checkCollision(pacmanX, nextY, pacmanAncho, pacmanAlto)) {
+            direccionActual = ABAJO;
+            enMovimiento = true;
+        }
+        break;
+    }
+}

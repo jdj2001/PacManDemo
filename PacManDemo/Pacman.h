@@ -11,11 +11,16 @@ extern float pacmanY;
 extern const float TUNNEL_LEFT;  
 extern const float TUNNEL_RIGHT; 
 
+extern int vidas;  // Número de vidas iniciales
+
+void renderizarVidas();
 void initPacman(float centroX, float centroY, float escalaMapa);
 
 void updatePacman();
 
 void drawPacman(GLuint textureID);
+
+void loseLife();
 
 void processPacmanInput(unsigned char key);
 

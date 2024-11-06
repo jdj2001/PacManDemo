@@ -15,6 +15,7 @@ void renderizarTexto(float x, float y, const char* texto);
 void renderizarPuntaje();
 //bool checkCollisionPellet(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
 bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto);
+bool checkGhostCollision(float nextX, float nextY, float fantasmaAncho, float fantasmaAlto);
 void checkPelletCollision();
 void renderizarPuntaje();
 

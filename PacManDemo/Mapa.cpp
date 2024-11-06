@@ -91,7 +91,7 @@ void initMapa() {
     objetos.push_back({ 88, mapaOriginalAlto - (127 + 1), 48, 1 });
     objetos.push_back({ 135, mapaOriginalAlto - (104 + 24), 1, 24 }); // Pared derecha interior
     objetos.push_back({ 104, mapaOriginalAlto - (99 + 6), 16, 6 });   // Parte por donde saldrán los fantasmas
-    objetos.push_back({ 89, mapaOriginalAlto - (105 + 22), 46, 22 }); // Área donde estarán los fantasmas
+    //objetos.push_back({ 89, mapaOriginalAlto - (105 + 22), 46, 22 }); // Área donde estarán los fantasmas
 
     // Segmento inferior
     objetos.push_back({ 0, mapaOriginalAlto - (243 + 5), 224, 5 });   // Pared inferior
@@ -117,16 +117,12 @@ void initMapa() {
     objetos.push_back({ 0, mapaOriginalAlto - (156 + 92), 5, 92 });   // Pared izquierda inferior
     objetos.push_back({ 219, mapaOriginalAlto - (156 + 92), 5, 92 }); // Pared derecha inferior
 
-    // Obstáculos adicionales
     objetos.push_back({ 4, mapaOriginalAlto - (195 + 10), 17, 10 });
     objetos.push_back({ 0, mapaOriginalAlto - (123 + 34), 45, 34 });//OBJETO INFERIOR TUNEL IZQUIERDO
     objetos.push_back({ 203, mapaOriginalAlto - (195 + 10), 17, 10 });
     objetos.push_back({ 179, mapaOriginalAlto - (123 + 34), 45, 34 });
 }
 
-
-
-// Dibujar el mapa
 void drawMapa() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, mapaTexture);
@@ -183,7 +179,7 @@ void initPellets() {
     // Pellets grandes
 
     // SELECTION 8 × 8 @ (8, 24)
-    pellets.push_back({8, 31, true});
+    /*pellets.push_back({8, 31, true});
 
     // SELECTION 8 × 8 @ (208, 24)
     pellets.push_back({ 208, 31, true });
@@ -458,7 +454,7 @@ void initPellets() {
     for (int i = 0; i < 5; i++) {
         Pellet smallPellet = { 179 + i * (pelletSmallSize + 6), 211, false };
         pellets.push_back(smallPellet);
-    }
+    }*/
 
     // SELECTION 2 × 10 @ (211, 219)
     for (int i = 0; i < 2; i++) {

@@ -5,15 +5,18 @@
 #include "Mapa.h"
 #include "Menu.h"
 #include "TextureLoader.h"
+#include "Fantasma.h"
 #include <iostream>
 #include "HUD.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
 
 unsigned int pacmanTexture;
+unsigned int fantasmasTexture;
 unsigned int mapaTexture;
 unsigned int mapaTexturePellets;
 bool showEndLevelDialog = false;
+bool showGameOverDialog = false;
 bool isGamePaused = false;
 bool isMusicPlaying = false;
 
@@ -26,7 +29,22 @@ Mix_Chunk* eatDotSound = nullptr;
 bool isLevelStarting = true;
 Uint32 levelStartTime = 0;
 
+float colorRojo[3] = { 1.0f, 0.0f, 0.0f };        
+float colorRosa[3] = { 255.0f / 255.0f, 183.0f / 255.0f, 255.0f / 255.0f }; 
+float colorCyan[3] = { 0.0f, 255.0f / 255.0f, 255.0f / 255.0f };            
+float colorNaranja[3] = { 254.0f / 255.0f, 182.0f / 255.0f, 81.0f / 255.0f }; 
+
+std::vector<Fantasma> fantasmas;
+
 void initGame() {
+    fantasmas.clear(); 
+    fantasmasTexture = loadTexture("C:/sprite_personajes.png");
+
+    fantasmas.emplace_back(83.0f * escalaMapa + centroX, (mapaOriginalAlto - 99.0f) * escalaMapa + centroY, colorRojo);
+    fantasmas.emplace_back(90.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorRosa);
+    fantasmas.emplace_back(105.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorCyan);
+    fantasmas.emplace_back(120.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorNaranja);
+
     showEndLevelDialog = false;  
     isGamePaused = false;
     isLevelStarting = true;
@@ -40,10 +58,7 @@ void initGame() {
     eatDotSound = Mix_LoadWAV("D:/clases/Comp Grafica y Visual/II/PacManDemo/PacManDemo/PacManDemo/Arcade - Pac-Man - Sound Effects/eat_dot_0.wav");
 
     levelStartTime = SDL_GetTicks();
-    
-    //Mix_PlayMusic(intermissionMusic, 0);
-    
-
+  
     pacmanTexture = loadTexture("C:/sprite_personajes.png");
     mapaTexture = loadTexture("C:/mapa2.png");
     mapaTexturePellets = loadTexture("C:/mapa1.png");
@@ -61,8 +76,6 @@ void initGame() {
     centroY = (ventanaAlto - mapaOriginalAlto * escalaMapa) / 2.0f;
 
     initPacman(centroX, centroY, escalaMapa);
-
-    //isLevelStarting = true;
 }
 
 void mostrarVentanaFinDeNivel() {
@@ -76,18 +89,28 @@ void cleanupGame() {
     Mix_CloseAudio();
 }
 
+void mostrarVentanaDerrota() {
+    showGameOverDialog = true;
+    glutPostRedisplay();
+}
+
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT);
     drawMapa();
     drawPellets();
     drawPacman(pacmanTexture);
+    
+    for (auto& fantasma : fantasmas) {
+        fantasma.draw(fantasmasTexture);
+    }
+    
     renderizarPuntaje();
+    renderizarVidas();  
 
     if (!isMusicPlaying) {
         Mix_PlayMusic(intermissionMusic, 0);
         isMusicPlaying = true;
     }
-    //Mix_PlayMusic(intermissionMusic, 0);
     Uint32 currentTime = SDL_GetTicks();
     if (isLevelStarting && (currentTime - levelStartTime < 5000)) {
         glPushAttrib(GL_CURRENT_BIT);
@@ -101,12 +124,12 @@ void renderScene() {
         isLevelStarting = false;
         isGamePaused = false;
     }
-    //isMusicPlaying = false;
+
     if (showEndLevelDialog) {
         isGamePaused = true;
         glPushAttrib(GL_CURRENT_BIT);
 
-        // Fondo ventana emergente
+        
         glColor3f(0.0f, 0.0f, 0.0f);
         glBegin(GL_QUADS);
         glVertex2f(620, 420);
@@ -115,7 +138,7 @@ void renderScene() {
         glVertex2f(620, 680);
         glEnd();
 
-        // Borde de la ventana
+        
         glColor3f(1.0f, 1.0f, 1.0f);
         glBegin(GL_LINE_LOOP);
         glVertex2f(620, 420);
@@ -124,11 +147,11 @@ void renderScene() {
         glVertex2f(620, 680);
         glEnd();
 
-        // Mensaje de finalización
+        
         glColor3f(1.0f, 1.0f, 0.0f);
         renderizarTexto(700.0f, 620.0f, "¡Felicidades! Has ganado el nivel.");
 
-        // Botón "Volver a jugar"
+        
         glColor3f(0.5f, 0.5f, 0.5f);
         glBegin(GL_QUADS);
         glVertex2f(650, 500);
@@ -139,7 +162,7 @@ void renderScene() {
         glColor3f(1.0f, 1.0f, 1.0f);
         renderizarTexto(690.0f, 530.0f, "Volver a jugar");
 
-        // Botón "Regresar al menú"
+        
         glColor3f(0.5f, 0.5f, 0.5f);
         glBegin(GL_QUADS);
         glVertex2f(870, 500);
@@ -153,20 +176,73 @@ void renderScene() {
         glPopAttrib();
         
     }
+    else if (showGameOverDialog) {
+        isGamePaused = true;
+        glPushAttrib(GL_CURRENT_BIT);
+
+        glColor3f(0.0f, 0.0f, 0.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(620, 420);
+        glVertex2f(1100, 420);
+        glVertex2f(1100, 680);
+        glVertex2f(620, 680);
+        glEnd();
+        
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(620, 420);
+        glVertex2f(1100, 420);
+        glVertex2f(1100, 680);
+        glVertex2f(620, 680);
+        glEnd();
+
+        glColor3f(1.0f, 1.0f, 0.0f);
+        renderizarTexto(700.0f, 620.0f, "¡Perdiste! ¡Suerte a la próxima!");
+
+        glColor3f(0.5f, 0.5f, 0.5f);
+        glBegin(GL_QUADS);
+        glVertex2f(650, 500);
+        glVertex2f(850, 500);
+        glVertex2f(850, 570);
+        glVertex2f(650, 570);
+        glEnd();
+        glColor3f(1.0f, 1.0f, 1.0f);
+        renderizarTexto(690.0f, 530.0f, "Volver a jugar");
+
+        glColor3f(0.5f, 0.5f, 0.5f);
+        glBegin(GL_QUADS);
+        glVertex2f(870, 500);
+        glVertex2f(1070, 500);
+        glVertex2f(1070, 570);
+        glVertex2f(870, 570);
+        glEnd();
+        glColor3f(1.0f, 1.0f, 1.0f);
+        renderizarTexto(890.0f, 530.0f, "Regresar al menu");
+
+        glPopAttrib();
+    }
 
     glutSwapBuffers();
+
 }
 
 void resetGame() {
     puntaje = 0;
     initMapa();
     initPellets();
+    fantasmas.clear(); 
+    fantasmas.emplace_back(83.0f * escalaMapa + centroX, (mapaOriginalAlto - 99.0f) * escalaMapa + centroY, colorRojo);
+    fantasmas.emplace_back(90.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorRosa);
+    fantasmas.emplace_back(105.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorCyan);
+    fantasmas.emplace_back(120.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorNaranja);
     initPacman(centroX, centroY, escalaMapa);
+    for (auto& fantasma : fantasmas) {
+        fantasma.draw(fantasmasTexture);
+    }
 
     showEndLevelDialog = false;
     isGamePaused = false;
     isLevelStarting = true;
-    //isMusicPlaying = false;
 
     levelStartTime = SDL_GetTicks();
     if (!isMusicPlaying) {
@@ -176,7 +252,6 @@ void resetGame() {
     glutPostRedisplay();
 }
 
-
 void goToMainMenu() {
     //initMenu();
     std::cout << "Regresando al menú principal..." << std::endl;
@@ -184,7 +259,6 @@ void goToMainMenu() {
     showEndLevelDialog = false; 
     gameStarted = false;         
     
-    //isMusicPlaying = true;
     if (isMusicPlaying) {
         Mix_HaltMusic(); 
         isMusicPlaying = false;
@@ -199,14 +273,13 @@ void mouseCallback(int button, int state, int x, int y) {
 
         std::cout << "Clic en: (" << gameX << ", " << gameY << ")" << std::endl;
 
-        //VOLVER A JUGAR
         if (gameX >= 650 && gameX <= 850 && gameY >= 500 && gameY <= 570) {
             Mix_HaltMusic();  
             isMusicPlaying = false;
+            fantasmas.clear(); 
             resetGame();
         }
 
-        // MENU
         if (gameX >= 870 && gameX <= 1070 && gameY >= 500 && gameY <= 570) {
             Mix_PlayMusic(intermissionMusic, 0);
             isMusicPlaying = true;
@@ -220,7 +293,11 @@ void updateGame() {
     if (!isGamePaused && (!isLevelStarting || (currentTime - levelStartTime >= 5000))) {
         updatePacman();
         checkPelletCollision();
+        for (auto& fantasma : fantasmas) {
+            fantasma.update();
+        }
     }
+    
 }
 
 void handleInput(unsigned char key) {
