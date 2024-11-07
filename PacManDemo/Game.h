@@ -6,7 +6,8 @@
 extern unsigned int pacmanTexture;
 extern unsigned int mapaTexture;
 extern unsigned int mapaTexturePellets;
-extern bool showEndLevelDialog;  
+extern bool showEndLevelDialog; 
+extern bool showGameOverDialog;
 extern Mix_Chunk* eatDotSound;
 extern bool isGamePaused;
 extern bool isLevelStarting;
@@ -16,6 +17,7 @@ extern bool isMusicPlaying;
 
 void resetGame();  
 void goToMainMenu();  
+void reiniciarPosiciones();
 
 void handleInput(unsigned char);
 void initGame(void);

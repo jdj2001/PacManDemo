@@ -82,15 +82,27 @@ void initMapa() {
     objetos.push_back({ 179, mapaOriginalAlto - (75 + 34), 45, 34 });//OBJETO SUPERIOR (TUNEL DERECHO)
 
     // Segmento medio (jaula de los fantasmas)
-    objetos.push_back({ 83, mapaOriginalAlto - (99 + 1), 58, 1 }); //-  
+    //objetos.push_back({ 83, mapaOriginalAlto - (99 + 1), 58, 1 }); //- 
+    //paredes de la puerta
+    objetos.push_back({ 83, mapaOriginalAlto - (99 + 1), 21, 1 });
+    objetos.push_back({ 120, mapaOriginalAlto - (99 + 1), 21, 1 });
+
     objetos.push_back({ 83, mapaOriginalAlto - (99 + 34), 1, 34 }); //*  
     objetos.push_back({ 83, mapaOriginalAlto - (132 + 1), 58, 1 });
     objetos.push_back({ 140, mapaOriginalAlto - (99 + 34), 1, 34 }); //*
-    objetos.push_back({ 88, mapaOriginalAlto - (104 + 24), 1, 24 });
-    objetos.push_back({ 88, mapaOriginalAlto - (104 + 1), 48, 1 });
+    objetos.push_back({ 88, mapaOriginalAlto - (104 + 24), 1, 24 });//pared izquieda interior
+    //15 × 1 @ (89, 105)
+    objetos.push_back({ 89, mapaOriginalAlto - (104), 15, 1 });//pared izquierda superior
+    //15 × 1 @ (120, 105)
+    objetos.push_back({ 120, mapaOriginalAlto - (104), 15, 1 });//pared derecha superior
+
     objetos.push_back({ 88, mapaOriginalAlto - (127 + 1), 48, 1 });
     objetos.push_back({ 135, mapaOriginalAlto - (104 + 24), 1, 24 }); // Pared derecha interior
-    objetos.push_back({ 104, mapaOriginalAlto - (99 + 6), 16, 6 });   // Parte por donde saldrán los fantasmas
+    //objetos.push_back({ 104, mapaOriginalAlto - (99 + 6), 16, 6 });   // Parte por donde saldrán los fantasmas
+    //48 × 1 @ (88, 104)
+    //objetos.push_back({ 88, mapaOriginalAlto - (104 + 1), 48, 1 });
+    //48 × 1 @ (88, 127)
+    objetos.push_back({ 88, mapaOriginalAlto - (127 + 1), 48, 1 });
     //objetos.push_back({ 89, mapaOriginalAlto - (105 + 22), 46, 22 }); // Área donde estarán los fantasmas
 
     // Segmento inferior

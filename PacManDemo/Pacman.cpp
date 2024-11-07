@@ -5,6 +5,7 @@
 #include "Mapa.h"
 #include <cmath>
 #include <vector>
+#include "Fantasma.h"
 
 float pacmanX = 0.0f;
 float pacmanY = 0.0f;
@@ -27,12 +28,12 @@ int animacionIndex = 0;
 int animacionDelay = 40;
 float lastAnimacionTime = 0;
 
-struct Animacion {
+/*struct Animacion {
     float texCoordLeft;
     float texCoordRight;
     float texCoordBottom;
     float texCoordTop;
-};
+};*/
 
 Animacion pacmanAnimaciones[3][4];
 
@@ -41,6 +42,15 @@ extern const Animacion vidaIcono = { 133.0f / 226.0f, (133.0f + 10.0f) / 226.0f,
 std::vector<Animacion> deathAnimaciones = {
     {51.0f / 226.0f, (51.0f + 13.0f) / 226.0f, 3.0f / 248.0f, (3.0f + 9.0f) / 248.0f},
     {66.0f / 226.0f, (66.0f + 15.0f) / 226.0f, 4.0f / 248.0f, (4.0f + 8.0f) / 248.0f},
+    {82.0f / 226.0f, (82.0f + 15.0f) / 226.0f, 6.0f / 248.0f, (6.0f + 6.0f) / 248.0f},
+    {98.0f / 226.0f, (98.0f + 15.0f) / 226.0f, 7.0f / 248.0f, (7.0f + 5.0f) / 248.0f},
+    {114.0f / 226.0f, (114.0f + 15.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 5.0f) / 248.0f},
+    {130.0f / 226.0f, (130.0f + 15.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 6.0f) / 248.0f},
+    {147.0f / 226.0f, (147.0f + 15.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 7.0f) / 248.0f},
+    {165.0f / 226.0f, (165.0f + 15.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 7.0f) / 248.0f},
+    {183.0f / 226.0f, (183.0f + 5.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 7.0f) / 248.0f},
+    {201.0f / 226.0f, (201.0f + 15.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 6.0f) / 248.0f},
+    {212.0f / 226.0f, (212.0f + 15.0f) / 226.0f, 6.0f / 248.0f, (6.0f + 10.0f) / 248.0f},
     //FALTAN ANIMACIONES
 };
 
@@ -61,13 +71,16 @@ void initAnimaciones() {
     pacmanAnimaciones[2][ABAJO] = { 3.0f / 226.0f, (3.0f + 13.0f) / 226.0f, 37.0f / 248.0f, (37.0f + 9.0f) / 248.0f };
 }
 
-void initPacman(float centroX, float centroY, float escalaMapa) {
+void initPacman(float centroX, float centroY, float escalaMapa, bool inicializarVidas = true) {
     pacmanX = centroX + 106.0f * escalaMapa;
     pacmanY = centroY + 101.5f * escalaMapa;
 
     initAnimaciones();
 
-    vidas = 3;
+    if (inicializarVidas) {
+        vidas = 3;  
+    }
+
     isDying = false;
 }
 
@@ -106,11 +119,12 @@ void drawDeathAnim(GLuint textureID) {
 }
 
 void loseLife() {
-    if (vidas > 0) {
+    if (!isDying && vidas > 0) {
         vidas--;
+        isDying = true;
+        deathAnimIndex = 0;  // Reiniciar animación de muerte
         if (vidas == 0) {
-            isDying = true;
-            deathAnimIndex = 0; 
+            mostrarVentanaDerrota();  // Mostrar ventana de derrota si no hay más vidas
         }
     }
 }
@@ -124,9 +138,13 @@ void updateDeathAnim() {
                 lastDeathAnimTime = currentTime;
             }
             else {
-                isDying = false;
-                if (vidas == 0) {
-                    mostrarVentanaDerrota();
+                isDying = false;  // Terminar la animación
+                if (vidas > 0) {
+                    reiniciarPosiciones();  // Reiniciar posiciones si aún tiene vidas
+                    isGamePaused = false;
+                }
+                else {
+                    mostrarVentanaDerrota();  // Mostrar derrota si no tiene más vidas
                 }
             }
         }
@@ -204,6 +222,11 @@ void updatePacman() {
         float tunelDerechoX = (223 * escalaMapa) + centroX;
         float tunelYMin = (mapaOriginalAlto - 123) * escalaMapa + centroY;
         float tunelYMax = (mapaOriginalAlto - 109) * escalaMapa + centroY;
+        //16 × 1 @ (104, 99)
+        //88, mapaOriginalAlto - (104 + 24), 1, 24
+        float puertaJaulaY = (mapaOriginalAlto - 99) * escalaMapa + centroY;
+        float puertaJaulaXMin = (104 * escalaMapa) + centroX;
+        float puertaJaulaXMax = (119 * escalaMapa) + centroX;
 
         if (nextX < tunelIzquierdoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
             nextX = tunelDerechoX - pacmanAncho;
@@ -211,17 +234,27 @@ void updatePacman() {
         else if (nextX > tunelDerechoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
             nextX = tunelIzquierdoX;
         }
+        // Si Pac-Man intenta entrar a la jaula desde ARRIBA o ABAJO, detén su movimiento
+        if (nextY < puertaJaulaY && nextY > (puertaJaulaY - 1) && direccionActual == ABAJO && pacmanX + pacmanAncho > puertaJaulaXMin && pacmanX < puertaJaulaXMax) {
+            // Verificar si está dentro del rango de X de la puerta de la jaula
+            //if (pacmanX + pacmanAncho > puertaJaulaXMin && pacmanX < puertaJaulaXMax) {
+                // Ajustar posición o detener movimiento
+                enMovimiento = false;
+                return; // Salir de la función para evitar que Pac-Man avance
+            
+        }
+
 
         if (!checkCollision(nextX, nextY, pacmanAncho, pacmanAlto)) {
             pacmanX = nextX;
             pacmanY = nextY;
-
         }
         else {
             enMovimiento = false;
         }
     }
 }
+
 
 void processPacmanInput(unsigned char key) {
     float nextX = pacmanX;
