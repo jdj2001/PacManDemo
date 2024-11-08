@@ -10,7 +10,8 @@
 void display() {
     //renderScene();  
     if (gameStarted) {
-        renderScene();  
+        renderScene(); 
+        
     }
     else {
         renderMenu();   

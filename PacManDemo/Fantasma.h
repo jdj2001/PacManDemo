@@ -22,9 +22,9 @@ public:
     void draw(GLuint textureID);
     void update();
     //void chooseDirection(float pacmanX, float pacmanY);  // Nueva función de persecución
-    bool checkCollisionWithPacman(float pacmanX, float pacmanY, float pacmanAncho, float pacmanAlto);  // Verifica colisión
-    void setEnJaula(bool enJaula);  // Nueva función para manejar el estado de la jaula
-    void checkSalida(Uint32 tiempoActual);  // Nueva función para comprobar la salida del fantasma
+    bool checkCollisionWithPacman(float pacmanX, float pacmanY, float pacmanAncho, float pacmanAlto);  
+    void setEnJaula(bool enJaula); 
+    void checkSalida(Uint32 tiempoActual);  
     //void changeDirection();
 
     //void colisiones();
@@ -35,8 +35,8 @@ public:
     int direccionActual;
     float color[3];
     bool enJaula;
-    bool alcanzoSalida = false;  // Indica si el fantasma ha alcanzado la salida
-    Uint32 tiempoSalida;  // Tiempo para que el fantasma salga de la jaula
+    bool alcanzoSalida = false;  
+    Uint32 tiempoSalida; 
     //Uint32 timeToExit = SDL_GetTicks();
     static const int fantasmaAncho = 44;
     static const int fantasmaAlto = 44;

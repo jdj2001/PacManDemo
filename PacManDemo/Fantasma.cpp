@@ -6,9 +6,9 @@
 #include <cstdlib>
 #include <SDL.h>
 
-float tiempoSalida[3] = { 10.0f, 15.0f, 20.0f };  // Tiempo de salida para los fantasmas (en segundos)
-bool fantasmaSalio[3] = { false, false, false };  // Indica si el fantasma ya salió
-float tiempoTranscurrido[3] = { 0.0f, 0.0f, 0.0f };  // Tiempo que ha pasado desde el inicio para cada fantasma
+float tiempoSalida[3] = { 10.0f, 15.0f, 20.0f };  
+bool fantasmaSalio[3] = { false, false, false };  
+float tiempoTranscurrido[3] = { 0.0f, 0.0f, 0.0f }; 
 //float salidaX = 104.0f * escalaMapa + centroX;
 //float salidaY = (mapaOriginalAlto - (99 + 6)) * escalaMapa + centroY;
 
@@ -28,6 +28,7 @@ void Fantasma::setEnJaula(bool enJaula) {
 }
 
 void Fantasma::initAnimaciones() {
+    
     if (color[0] == 1.0f && color[1] == 0.0f && color[2] == 0.0f) { // Rojo
         animaciones[DERECHA] = { 3.0f / 226.0f, (3.0f + 14.0f) / 226.0f, 65.0f / 248.0f, (65.0f + 14.0f) / 248.0f };
         animaciones[IZQUIERDA] = { (3.0f + 14.0f) / 226.0f, 3.0f / 226.0f, 65.0f / 248.0f, (65.0f + 14.0f) / 248.0f };
@@ -94,44 +95,72 @@ void Fantasma::draw(GLuint textureID) {
 }*/
 //##########
 void Fantasma::update() {
-    float nextY = posY;
-    //objetos.push_back({ 88, mapaOriginalAlto - (104 + 1), 16, 1 });//pared izquieda interior
-    //15 × 1 @ (89, 105)
-    //objetos.push_back({ 89, mapaOriginalAlto - (104), 15, 1 });//pared SUPERIOR izquierda 
-    //15 × 1 @ (120, 105)
-    //objetos.push_back({ 120, mapaOriginalAlto - (104 + 1), 16, 1 });//pared SUPERIOR derecha superior
-
-    //objetos.push_back({ 88, mapaOriginalAlto - (127 + 1), 48, 1 });
-    //objetos.push_back({ 135, mapaOriginalAlto - (104 + 24), 1, 24 }); // Pared derecha interior
-
-    // Limites superior e inferior de la jaula para los fantasmas
+    Uint32 tiempoActual = SDL_GetTicks();
+    
+    //Mix_PlayMusic(movimientoFatasmas, 0);
+    
     float limiteSuperiorJaula = (mapaOriginalAlto - 117) * escalaMapa + centroY;
     float limiteInferiorJaula = (mapaOriginalAlto - 128) * escalaMapa + centroY;
+    float puertaJaulaY = (mapaOriginalAlto - 99) * escalaMapa + centroY;
+    float salidaX = 106.0f * escalaMapa + centroX;
 
-    // Movimiento solo ARRIBA y ABAJO mientras el fantasma está en la jaula
     if (enJaula) {
-        float nextY = posY;
-        // Cambia la dirección si se alcanza el límite superior o inferior
-        if (direccionActual == ARRIBA) {
-            nextY += speed;
-            if (nextY >= limiteSuperiorJaula) {
-                direccionActual = ABAJO; // Cambia a dirección hacia abajo
-            }
-        }
-        else if (direccionActual == ABAJO) {
-            nextY -= speed;
-            if (nextY <= limiteInferiorJaula) {
-                direccionActual = ARRIBA; // Cambia a dirección hacia arriba
-            }
-        }
-
-        // Actualiza la posición en Y
-        posY = nextY;
-    }
-    else {
         float nextX = posX;
         float nextY = posY;
 
+        if (tiempoActual >= tiempoSalida) {
+            if (posX != salidaX) {
+                if (posX < salidaX) {
+                    posX = salidaX;
+
+                }
+                else if (posX > salidaX) {
+                    //direccionActual = IZQUIERDA;
+                    //nextX -= speed;
+                    posX = salidaX;
+
+                }
+                /*if (posY < puertaJaulaY) {
+                    direccionActual = ARRIBA;
+                    nextY += speed;
+                }*/
+                if (posY < puertaJaulaY && posX == salidaX) {
+                    direccionActual = ARRIBA;
+                    nextY += speed;
+                    int randomValue = rand() % 2; // Genera 0, 1 o 2
+
+                    if (randomValue == 0) {
+                        direccionActual = DERECHA;
+                    }
+                    else if (randomValue == 1) {
+                        direccionActual = IZQUIERDA;
+                    }
+                }
+            }
+            else {
+                enJaula = false;
+
+            }
+        }
+        else {
+            if (direccionActual == ARRIBA) {
+                nextY += speed;
+                if (nextY >= limiteSuperiorJaula) {
+                    direccionActual = ABAJO;
+                }
+            }
+            else if (direccionActual == ABAJO) {
+                nextY -= speed;
+                if (nextY <= limiteInferiorJaula) {
+                    direccionActual = ARRIBA;
+                }
+            }
+        }
+        posY = nextY;
+    }
+    else if (!enJaula) {
+        float nextX = posX;
+        float nextY = posY;
         switch (direccionActual) {
         case DERECHA: nextX += speed; break;
         case IZQUIERDA: nextX -= speed; break;
@@ -147,15 +176,17 @@ void Fantasma::update() {
             direccionActual = rand() % 4;
         }
     }
+
+
 }
 
 
 void Fantasma::checkSalida(Uint32 tiempoActual) {
     if (enJaula && tiempoActual >= tiempoSalida) {
-        //enJaula = false;  // Sale de la jaula
-        //direccionActual = ARRIBA;  // Dirección hacia la salida
+        direccionActual = ARRIBA;  
     }
 }
+
 
 bool Fantasma::checkCollisionWithPacman(float pacmanX, float pacmanY, float pacmanAncho, float pacmanAlto) {
     return (posX < pacmanX + pacmanAncho &&

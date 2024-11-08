@@ -12,7 +12,7 @@ extern const float TUNNEL_LEFT;
 extern const float TUNNEL_RIGHT; 
 extern bool isDying;
 
-extern int vidas;  // Número de vidas iniciales
+extern int vidas; 
 
 void renderizarVidas();
 //void initPacman(float centroX, float centroY, float escalaMapa);

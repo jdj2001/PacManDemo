@@ -9,9 +9,11 @@ extern unsigned int mapaTexturePellets;
 extern bool showEndLevelDialog; 
 extern bool showGameOverDialog;
 extern Mix_Chunk* eatDotSound;
+extern Mix_Chunk* muertePacman;
 extern bool isGamePaused;
 extern bool isLevelStarting;
 extern Mix_Music* intermissionMusic;
+extern Mix_Chunk* movimientoFatasmas;
 extern Uint32 levelStartTime;
 extern bool isMusicPlaying;
 

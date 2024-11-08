@@ -191,7 +191,7 @@ void initPellets() {
     // Pellets grandes
 
     // SELECTION 8 × 8 @ (8, 24)
-    /*pellets.push_back({8, 31, true});
+    pellets.push_back({8, 31, true});
 
     // SELECTION 8 × 8 @ (208, 24)
     pellets.push_back({ 208, 31, true });
@@ -466,7 +466,7 @@ void initPellets() {
     for (int i = 0; i < 5; i++) {
         Pellet smallPellet = { 179 + i * (pelletSmallSize + 6), 211, false };
         pellets.push_back(smallPellet);
-    }*/
+    }
 
     // SELECTION 2 × 10 @ (211, 219)
     for (int i = 0; i < 2; i++) {

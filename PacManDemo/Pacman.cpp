@@ -120,11 +120,12 @@ void drawDeathAnim(GLuint textureID) {
 
 void loseLife() {
     if (!isDying && vidas > 0) {
+        Mix_PlayChannel(-1, muertePacman, 0);
         vidas--;
         isDying = true;
-        deathAnimIndex = 0;  // Reiniciar animación de muerte
+        deathAnimIndex = 0;  
         if (vidas == 0) {
-            mostrarVentanaDerrota();  // Mostrar ventana de derrota si no hay más vidas
+            mostrarVentanaDerrota();  
         }
     }
 }
@@ -138,13 +139,13 @@ void updateDeathAnim() {
                 lastDeathAnimTime = currentTime;
             }
             else {
-                isDying = false;  // Terminar la animación
+                isDying = false; 
                 if (vidas > 0) {
-                    reiniciarPosiciones();  // Reiniciar posiciones si aún tiene vidas
+                    reiniciarPosiciones();  
                     isGamePaused = false;
                 }
                 else {
-                    mostrarVentanaDerrota();  // Mostrar derrota si no tiene más vidas
+                    mostrarVentanaDerrota(); 
                 }
             }
         }
@@ -234,13 +235,11 @@ void updatePacman() {
         else if (nextX > tunelDerechoX && (pacmanY > tunelYMin && pacmanY < tunelYMax)) {
             nextX = tunelIzquierdoX;
         }
-        // Si Pac-Man intenta entrar a la jaula desde ARRIBA o ABAJO, detén su movimiento
         if (nextY < puertaJaulaY && nextY > (puertaJaulaY - 1) && direccionActual == ABAJO && pacmanX + pacmanAncho > puertaJaulaXMin && pacmanX < puertaJaulaXMax) {
-            // Verificar si está dentro del rango de X de la puerta de la jaula
+            
             //if (pacmanX + pacmanAncho > puertaJaulaXMin && pacmanX < puertaJaulaXMax) {
-                // Ajustar posición o detener movimiento
                 enMovimiento = false;
-                return; // Salir de la función para evitar que Pac-Man avance
+                return; 
             
         }
 
