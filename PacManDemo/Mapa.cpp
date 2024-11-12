@@ -3,6 +3,7 @@
 #include "Mapa.h"
 #include "Game.h"
 #include "Pacman.h"
+//#include "Fantasma.h"
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -42,6 +43,8 @@ struct Pellet {
 std::vector<Pellet> pellets;
 std::vector<Objeto> objetos;
 std::vector<Pasillo> pasillos;
+
+//std::vector<Fantasma> fantasmas;
 
 extern unsigned int mapaTexturePellets; 
 extern float escalaMapa;
@@ -103,7 +106,7 @@ void initMapa() {
     //objetos.push_back({ 88, mapaOriginalAlto - (104 + 1), 48, 1 });
     //48 × 1 @ (88, 127)
     objetos.push_back({ 88, mapaOriginalAlto - (127 + 1), 48, 1 });
-    //objetos.push_back({ 89, mapaOriginalAlto - (105 + 22), 46, 22 }); // Área donde estarán los fantasmas
+    //objetos.push_back({ 89, mapaOriginalAlto - (105 + 22), 46, 22 }); // Área donde están los fantasmas
 
     // Segmento inferior
     objetos.push_back({ 0, mapaOriginalAlto - (243 + 5), 224, 5 });   // Pared inferior
@@ -139,6 +142,9 @@ void drawMapa() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, mapaTexture);
 
+    // Cambiar el color del mapa (Ejemplo: azul)
+    glColor3f(0.0f, 0.0f, 1.0f);
+
     float mapaOriginalAncho = 227.0f;
     float mapaOriginalAlto = 248.0f;
 
@@ -161,9 +167,12 @@ void drawMapa() {
     glTexCoord2f(1.0f, 1.0f); glVertex2f(centroX + mapaAncho, centroY);    // Esquina inferior derecha
     glTexCoord2f(1.0f, 0.0f); glVertex2f(centroX + mapaAncho, centroY + mapaAlto);  // Esquina superior derecha
     glTexCoord2f(0.0f, 0.0f); glVertex2f(centroX, centroY + mapaAlto);     // Esquina superior izquierda
+    
     glEnd();
+    
 
     glDisable(GL_TEXTURE_2D);
+    glColor3f(1.0f, 1.0f, 1.0f);  // Restaurar color a blanco
 }
 
 bool checkCollision(float nextX, float nextY, float pacmanAncho, float pacmanAlto) {
@@ -494,6 +503,13 @@ void checkPelletCollision() {
             puntaje += pellet.isBig ? 50 : 10;
             Mix_PlayChannel(-1, eatDotSound, 0);
             pellet.isEaten = true;  
+
+            if (pellet.isBig) {
+                Uint32 tiempoActual = SDL_GetTicks();
+                for (auto& fantasma : fantasmas) {
+                    fantasma.setVulnerable(true, tiempoActual);
+                }
+            }
         }
 
         if (!pellet.isEaten) {
@@ -501,9 +517,6 @@ void checkPelletCollision() {
         }
     }
 
-    /*if (allPelletsEaten) {
-        mostrarVentanaFinDeNivel();
-    }*/
     if (allPelletsEaten && gameStarted) { 
         mostrarVentanaFinDeNivel();
     }
@@ -513,6 +526,8 @@ void checkPelletCollision() {
 void drawPellets() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, mapaTexturePellets);
+
+    //glColor3f(1.0f, 1.0f, 0.0f);
 
     for (const auto& pellet : pellets) {
         if (pellet.isEaten) continue; 
@@ -536,6 +551,7 @@ void drawPellets() {
     }
 
     glDisable(GL_TEXTURE_2D);
+    //glColor3f(1.0f, 1.0f, 1.0f);  // Restaurar color a blanco
 }
 
 
@@ -560,9 +576,9 @@ void renderizarPuntaje() {
     for (const char* c = texto; *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);  // Fuente y caracteres
     }
-}
-// Función para mostrar el puntaje en pantalla
-void renderizarPuntaje() {
+}*/
+
+/*void renderizarPuntaje() {
     std::string textoPuntaje = "Puntaje: " + std::to_string(puntaje); // Convierte el puntaje a texto
     glColor3f(1.0f, 1.0f, 0.0f); // Color amarillo para el texto
     renderizarTexto(1300.0f, 850.0f, textoPuntaje.c_str()); // Posición fuera del mapa, ajustada según resolución

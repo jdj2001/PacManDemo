@@ -8,15 +8,17 @@
 #include "Fantasma.h"
 
 void display() {
-    //renderScene();  
     if (gameStarted) {
-        renderScene(); 
-        
+        renderScene();
+    }
+    else if (instructionsVisible) {
+        renderInstructions();  
     }
     else {
-        renderMenu();   
+        renderMenu();  
     }
 }
+
 
 void update(int value) {
     if (gameStarted) {
@@ -61,17 +63,11 @@ int main(int argc, char** argv) {
     }
 
     initGame();  
-    // Definir el array de tiempos de salida
-    //Uint32 tiemposSalida[3] = { 1000, 2000, 3000 };  // Ejemplo de tiempos de salida
-
-    // Crear un objeto de la clase Fantasma con esos tiempos de salida
-    //Fantasma fantasma(10.0f, 20.0f, { 1.0f, 0.0f, 0.0f }, true, tiemposSalida);
 
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutTimerFunc(16, update, 0);
     glutMouseFunc(mouseClick);
-    //glutMouseFunc(mouseCallback);
 
     glutMainLoop();  
 

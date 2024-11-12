@@ -7,12 +7,12 @@
 #include "TextureLoader.h"
 #include "Fantasma.h"
 #include <iostream>
-#include "HUD.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
 
 unsigned int pacmanTexture;
 unsigned int fantasmasTexture;
+unsigned int fantasmasVulnerablesTexture;
 unsigned int mapaTexture;
 unsigned int mapaTexturePellets;
 bool showEndLevelDialog = false;
@@ -25,7 +25,7 @@ float centroX;
 float centroY;
 
 Mix_Music* intermissionMusic = nullptr;
-Mix_Chunk* movimientoFatasmas = nullptr;
+//Mix_Chunk* movimientoFatasmas = nullptr;
 Mix_Chunk* eatDotSound = nullptr;
 Mix_Chunk* muertePacman = nullptr;
 bool isLevelStarting = true;
@@ -37,7 +37,9 @@ float colorCyan[3] = { 0.0f, 255.0f / 255.0f, 255.0f / 255.0f };
 float colorNaranja[3] = { 254.0f / 255.0f, 182.0f / 255.0f, 81.0f / 255.0f };
 
 std::vector<Fantasma> fantasmas;
-//Uint32 tiempoInicio = SDL_GetTicks();
+
+int posicionJaulaIndex = 0;
+
 
 void initGame() {
     Uint32 tiempoInicio = SDL_GetTicks();
@@ -50,6 +52,8 @@ void initGame() {
     fantasmas.emplace_back(106.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorCyan, true, tiempoInicio + 10000);//azul
     fantasmas.emplace_back(121.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorNaranja, true, tiempoInicio + 20000);//naranja
 
+    fantasmasVulnerablesTexture = loadTexture("C:/sprite_personajes.png");
+
     showEndLevelDialog = false;
     isGamePaused = false;
     isLevelStarting = true;
@@ -60,8 +64,8 @@ void initGame() {
     }
 
     intermissionMusic = Mix_LoadMUS("D:/clases/Comp Grafica y Visual/II/PacManDemo/PacManDemo/PacManDemo/Arcade - Pac-Man - Sound Effects/intermission.wav");
-    movimientoFatasmas = Mix_LoadWAV("D:/clases/Comp Grafica y Visual/II/PacManDemo/PacManDemo/PacManDemo/Arcade - Pac-Man - Sound Effects/siren0.wav");
-    
+    //movimientoFatasmas = Mix_LoadWAV("D:/clases/Comp Grafica y Visual/II/PacManDemo/PacManDemo/PacManDemo/Arcade - Pac-Man - Sound Effects/siren0.wav");
+
     muertePacman = Mix_LoadWAV("D:/clases/Comp Grafica y Visual/II/PacManDemo/PacManDemo/PacManDemo/Arcade - Pac-Man - Sound Effects/death_0.wav");
 
     eatDotSound = Mix_LoadWAV("D:/clases/Comp Grafica y Visual/II/PacManDemo/PacManDemo/PacManDemo/Arcade - Pac-Man - Sound Effects/eat_dot_0.wav");
@@ -95,6 +99,7 @@ void mostrarVentanaFinDeNivel() {
 void cleanupGame() {
     Mix_FreeMusic(intermissionMusic);
     Mix_FreeChunk(eatDotSound);
+    //Mix_FreeChunk(movimientoFatasmas);
     Mix_CloseAudio();
 }
 
@@ -110,14 +115,15 @@ void renderScene() {
     //drawPacman(pacmanTexture);
 
     if (isDying) {
-        drawDeathAnim(pacmanTexture);  
+        drawDeathAnim(pacmanTexture);
     }
     else {
         drawPacman(pacmanTexture);
     }
 
     for (auto& fantasma : fantasmas) {
-        fantasma.draw(fantasmasTexture);
+        fantasma.draw();
+        //fantasma.draw(fantasmasTexture);
     }
 
     renderizarPuntaje();
@@ -250,21 +256,21 @@ void reiniciarPosiciones() {
 
     fantasmas.clear();
     fantasmas.emplace_back(83.0f * escalaMapa + centroX, (mapaOriginalAlto - 99.0f) * escalaMapa + centroY, colorRojo, false);
-    fantasmas.emplace_back(90.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorRosa, true, tiempoInicio + 10000);
-    fantasmas.emplace_back(105.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorCyan, true, tiempoInicio + 5000);
-    fantasmas.emplace_back(120.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorNaranja, true, tiempoInicio + 15000);
+    fantasmas.emplace_back(90.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorRosa, true, tiempoInicio + 15000);
+    fantasmas.emplace_back(105.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorCyan, true, tiempoInicio + 10000);
+    fantasmas.emplace_back(120.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorNaranja, true, tiempoInicio + 20000);
 
     isLevelStarting = true;
     levelStartTime = SDL_GetTicks();
 }
 
 void pausarJuegoParaMuerte() {
-    isGamePaused = true;  
-    Mix_HaltMusic();      
+    isGamePaused = true;
+    Mix_HaltMusic();
     drawDeathAnim(pacmanTexture);
-    if (!isDying) {       
+    if (!isDying) {
         reiniciarPosiciones();
-        isGamePaused = false;  
+        isGamePaused = false;
     }
 }
 
@@ -276,12 +282,12 @@ void resetGame() {
     fantasmas.clear();
     Uint32 tiempoInicio = SDL_GetTicks();
     fantasmas.emplace_back(83.0f * escalaMapa + centroX, (mapaOriginalAlto - 99.0f) * escalaMapa + centroY, colorRojo, false);
-    fantasmas.emplace_back(90.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorRosa, true, tiempoInicio + 10000);
-    fantasmas.emplace_back(106.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorCyan, true, tiempoInicio + 5000);
-    fantasmas.emplace_back(120.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorNaranja, true, tiempoInicio + 15000);
+    fantasmas.emplace_back(90.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorRosa, true, tiempoInicio + 15000);
+    fantasmas.emplace_back(106.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorCyan, true, tiempoInicio + 10000);
+    fantasmas.emplace_back(120.0f * escalaMapa + centroX, (mapaOriginalAlto - 122.0f) * escalaMapa + centroY, colorNaranja, true, tiempoInicio + 20000);
     initPacman(centroX, centroY, escalaMapa, true);
     for (auto& fantasma : fantasmas) {
-        fantasma.draw(fantasmasTexture);
+        fantasma.draw();
     }
 
     showGameOverDialog = false;
@@ -299,10 +305,10 @@ void resetGame() {
 }
 
 void goToMainMenu() {
-    //initMenu();
     std::cout << "Regresando al menú principal..." << std::endl;
 
     showEndLevelDialog = false;
+    showGameOverDialog = false;
     gameStarted = false;
 
     if (isMusicPlaying) {
@@ -340,19 +346,33 @@ void mouseCallback(int button, int state, int x, int y) {
     if (!isGamePaused && (!isLevelStarting || (currentTime - levelStartTime >= 5000))) {
         updatePacman();
         checkPelletCollision();
-        for (auto& fantasma : fantasmas) {
-            fantasma.update();
-            fantasma.checkSalida(currentTime);  
-            if (fantasma.checkCollisionWithPacman(pacmanX, pacmanY, pacmanAncho, pacmanAlto)) {
-                loseLife();  // Restar vida a Pac-Man
-                pausarJuegoParaMuerte();
-                return; // Salir de la función para pausar el juego y mostrar animación
+
+        if (!isDying) {
+            for (auto& fantasma : fantasmas) {
+                fantasma.update();
+                fantasma.checkSalida(currentTime);
+
+                if (fantasma.isVulnerable() && fantasma.checkCollisionWithPacman(pacmanX, pacmanY, pacmanAncho, pacmanAlto)) {
+                    puntaje += 200;  
+                    fantasma.setEnJaula(true); 
+                    //currentTime = 0;
+                    fantasma.setVulnerable(false, currentTime);  
+                    fantasma.posX = 106.0f * escalaMapa + centroX;
+                    fantasma.posY = (mapaOriginalAlto - 122.0f) * escalaMapa + centroY;
+                    continue;  
+
+                }else if (!fantasma.isVulnerable() && fantasma.checkCollisionWithPacman(pacmanX, pacmanY, pacmanAncho, pacmanAlto)) {
+                    loseLife();  
+                    pausarJuegoParaMuerte();
+                    return; 
+                }
             }
         }
     }
 }*/
 void updateGame() {
     Uint32 currentTime = SDL_GetTicks();
+
     if (!isGamePaused && (!isLevelStarting || (currentTime - levelStartTime >= 5000))) {
         updatePacman();
         checkPelletCollision();
@@ -362,10 +382,26 @@ void updateGame() {
                 fantasma.update();
                 fantasma.checkSalida(currentTime);
 
-                if (fantasma.checkCollisionWithPacman(pacmanX, pacmanY, pacmanAncho, pacmanAlto)) {
-                    loseLife();  // Restar vida a Pac-Man
+                if (fantasma.isVulnerable() && fantasma.checkCollisionWithPacman(pacmanX, pacmanY, pacmanAncho, pacmanAlto)) {
+                    puntaje += 200;
+
+                    float posicionesJaulaX[] = { 121.0f * escalaMapa + centroX, 106.0f * escalaMapa + centroX, 91.0f * escalaMapa + centroX };
+                    float posicionX = posicionesJaulaX[posicionJaulaIndex % 3];
+                    float posicionY = (mapaOriginalAlto - 122.0f) * escalaMapa + centroY;
+
+                    fantasma.setEnJaula(true, currentTime);
+                    fantasma.setVulnerable(false, currentTime);
+                    fantasma.posX = posicionX;
+                    fantasma.posY = posicionY;
+
+                    posicionJaulaIndex++;
+
+                    continue;
+                }
+                else if (!fantasma.isVulnerable() && fantasma.checkCollisionWithPacman(pacmanX, pacmanY, pacmanAncho, pacmanAlto)) {
+                    loseLife();
                     pausarJuegoParaMuerte();
-                    return; // Salir de la función para pausar el juego y mostrar animación
+                    return;
                 }
             }
         }

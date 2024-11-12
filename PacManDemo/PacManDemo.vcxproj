@@ -135,7 +135,6 @@
   <ItemGroup>
     <ClCompile Include="Fantasma.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mapa.cpp" />
     <ClCompile Include="Menu.cpp" />
@@ -146,7 +145,6 @@
   <ItemGroup>
     <ClInclude Include="Fantasma.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="HUD.h" />
     <ClInclude Include="Mapa.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Pacman.h" />

@@ -15,7 +15,6 @@ extern bool isDying;
 extern int vidas; 
 
 void renderizarVidas();
-//void initPacman(float centroX, float centroY, float escalaMapa);
 void initPacman(float centroX, float centroY, float escalaMapa, bool inicializarVidas);
 
 void updatePacman();

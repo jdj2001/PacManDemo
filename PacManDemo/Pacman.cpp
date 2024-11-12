@@ -51,7 +51,7 @@ std::vector<Animacion> deathAnimaciones = {
     {183.0f / 226.0f, (183.0f + 5.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 7.0f) / 248.0f},
     {201.0f / 226.0f, (201.0f + 15.0f) / 226.0f, 8.0f / 248.0f, (8.0f + 6.0f) / 248.0f},
     {212.0f / 226.0f, (212.0f + 15.0f) / 226.0f, 6.0f / 248.0f, (6.0f + 10.0f) / 248.0f},
-    //FALTAN ANIMACIONES
+    
 };
 
 void initAnimaciones() {
@@ -153,8 +153,10 @@ void updateDeathAnim() {
 }
 
 void drawPacman(GLuint textureID) {
-    glEnable(GL_TEXTURE_2D);
+    /*glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textureID);
+
+    //glColor3f(1.0f, 1.0f, 0.0f);
 
     Animacion currentAnim = pacmanAnimaciones[animacionIndex][direccionActual];
 
@@ -165,7 +167,8 @@ void drawPacman(GLuint textureID) {
     glTexCoord2f(currentAnim.texCoordLeft, currentAnim.texCoordTop); glVertex2f(pacmanX, pacmanY + pacmanAlto);
     glEnd();
 
-    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);*/
+    //glColor3f(1.0f, 1.0f, 1.0f);
 
     if (isDying) {
         drawDeathAnim(textureID);
@@ -173,6 +176,7 @@ void drawPacman(GLuint textureID) {
     else {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, textureID);
+        //glColor3f(1.0f, 0.0f, 0.0f);
 
         Animacion currentAnim = pacmanAnimaciones[animacionIndex][direccionActual];
         glBegin(GL_QUADS);
@@ -183,7 +187,9 @@ void drawPacman(GLuint textureID) {
         glEnd();
 
         glDisable(GL_TEXTURE_2D);
+        //glColor3f(1.0f, 1.0f, 1.0f);
     }
+    //glColor3f(0.0f, 0.0f, 1.0f);
 }
 
 void updatePacmanAnimacion() {
@@ -223,8 +229,6 @@ void updatePacman() {
         float tunelDerechoX = (223 * escalaMapa) + centroX;
         float tunelYMin = (mapaOriginalAlto - 123) * escalaMapa + centroY;
         float tunelYMax = (mapaOriginalAlto - 109) * escalaMapa + centroY;
-        //16 × 1 @ (104, 99)
-        //88, mapaOriginalAlto - (104 + 24), 1, 24
         float puertaJaulaY = (mapaOriginalAlto - 99) * escalaMapa + centroY;
         float puertaJaulaXMin = (104 * escalaMapa) + centroX;
         float puertaJaulaXMax = (119 * escalaMapa) + centroX;
@@ -236,10 +240,8 @@ void updatePacman() {
             nextX = tunelIzquierdoX;
         }
         if (nextY < puertaJaulaY && nextY > (puertaJaulaY - 1) && direccionActual == ABAJO && pacmanX + pacmanAncho > puertaJaulaXMin && pacmanX < puertaJaulaXMax) {
-            
-            //if (pacmanX + pacmanAncho > puertaJaulaXMin && pacmanX < puertaJaulaXMax) {
-                enMovimiento = false;
-                return; 
+            enMovimiento = false;
+            return; 
             
         }
 
